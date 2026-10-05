@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-
+import { TooltipProvider } from "@/components/ui/tooltip"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,13 +21,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    lang="en"
+    className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <TooltipProvider>
       <body className="min-h-full flex flex-col">
-        
+
         {children}
         <Toaster/></body>
+        </TooltipProvider>
     </html>
   );
 }
