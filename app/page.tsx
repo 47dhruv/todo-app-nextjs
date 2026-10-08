@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -6,18 +5,21 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "motion/react";
 
+import {
+  ArrowUpRight,
+  Check,
+  CheckCircle2,
+  Circle,
+  ListTodo,
+  Plus,
+  Trash2,
+  X,
+  Zap,
+  MoveUpRight,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Check,
-  Trash2,
-  Plus,
-  Circle,
-  CheckCircle2,
-  ListTodo,
-  Sparkles,
-  Zap,
-} from "lucide-react";
 
 interface Todo {
   id: number;
@@ -28,64 +30,82 @@ interface Todo {
 
 const Homepage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [title, setTitle] = useState<string>("");
+  const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
+
+  /* ================= FETCH ================= */
 
   const todolist = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/todos");
+      const response = await axios.get(
+        "http://localhost:3000/api/todos"
+      );
 
       setTodos(response.data.todo);
-      toast.success("Todo list fetched successfully");
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
     }
   };
 
+  /* ================= DELETE ================= */
+
   const deleteHandler = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:3000/api/todos/${id}`);
+      await axios.delete(
+        `http://localhost:3000/api/todos/${id}`
+      );
 
-      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      setTodos((prev) =>
+        prev.filter((todo) => todo.id !== id)
+      );
 
-      toast.success("Todo deleted successfully");
+      toast.success("Task deleted");
     } catch (error) {
       console.log(error);
-      toast.error("Todo not deleted");
+      toast.error("Task could not be deleted");
     }
   };
 
-  const toggle = async (id: number, completed: boolean) => {
+  /* ================= TOGGLE ================= */
+
+  const toggle = async (
+    id: number,
+    completed: boolean
+  ) => {
     try {
-      await axios.patch(`http://localhost:3000/api/todos/${id}`, {
-        completed: !completed,
-      });
+      await axios.patch(
+        `http://localhost:3000/api/todos/${id}`,
+        {
+          completed: !completed,
+        }
+      );
 
       setTodos((prev) =>
         prev.map((todo) =>
           todo.id === id
-            ? { ...todo, completed: !completed }
+            ? {
+                ...todo,
+                completed: !completed,
+              }
             : todo
         )
-      );
-
-      toast.success(
-        !completed ? "Todo completed 🎉" : "Todo marked incomplete"
       );
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
     }
   };
+
+  /* ================= CREATE ================= */
 
   const onSubmitHandler = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
 
-    if (title.trim().length <= 0) {
-      toast.error("Title is required");
+    if (!title.trim()) {
+      toast.error("Write something first!");
       return;
     }
 
@@ -99,10 +119,14 @@ const Homepage = () => {
         }
       );
 
-      setTodos((prev) => [...prev, response.data.data]);
+      setTodos((prev) => [
+        ...prev,
+        response.data.data,
+      ]);
 
-      toast.success("Todo added successfully ✨");
       setTitle("");
+
+      toast.success("New task added!");
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
@@ -115,358 +139,507 @@ const Homepage = () => {
     todolist();
   }, []);
 
-  const completedTodos = todos.filter((todo) => todo.completed).length;
-  const pendingTodos = todos.length - completedTodos;
+  const completed = todos.filter(
+    (todo) => todo.completed
+  ).length;
+
+  const pending = todos.length - completed;
+
+  /* ================= UI ================= */
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#080808] text-white">
-      {/* Decorative background */}
-      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
+    <main className="min-h-screen overflow-hidden bg-[#f1eee5] text-[#111]">
+
+      {/* ================= DECORATIVE BACKGROUND ================= */}
+
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+
+        {/* noise */}
+        <div className="absolute inset-0 opacity-[0.08] [background-image:url('data:image/svg+xml,%3Csvg viewBox=%220 0 180 180%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%22.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22 opacity=%22.3%22/%3E%3C/svg%3E')]" />
+
+        {/* lime blob */}
         <motion.div
           animate={{
-            x: [0, 80, 0],
-            y: [0, -50, 0],
+            rotate: [8, -5, 8],
           }}
           transition={{
-            duration: 12,
+            duration: 8,
             repeat: Infinity,
-            ease: "easeInOut",
           }}
-          className="absolute left-[-180px] top-[-180px] h-[500px] w-[500px] rounded-full bg-fuchsia-600/30 blur-[140px]"
+          className="absolute -right-20 top-20 h-64 w-64 rotate-6 bg-[#c8ff00]"
         />
 
+        {/* red blob */}
         <motion.div
           animate={{
-            x: [0, -100, 0],
-            y: [0, 80, 0],
+            rotate: [-10, 5, -10],
           }}
           transition={{
-            duration: 15,
+            duration: 7,
             repeat: Infinity,
-            ease: "easeInOut",
           }}
-          className="absolute right-[-180px] top-[20%] h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-[140px]"
+          className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[#ff5a52]"
         />
 
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:50px_50px]" />
+        {/* grid */}
+        <div className="absolute right-10 top-24 h-40 w-40 opacity-30 [background-image:radial-gradient(#111_1px,transparent_1px)] [background-size:10px_10px]" />
+
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-5 py-10 md:px-10 lg:py-16">
+      <div className="relative mx-auto max-w-7xl px-5 py-6 md:px-10 lg:px-14">
 
-        {/* HEADER */}
-        <motion.header
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+        {/* ================= NAVBAR ================= */}
+
+        <motion.nav
+          initial={{ y: -30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="flex items-center justify-between border-b-2 border-black pb-5"
         >
-          <div className="mb-5 flex items-center gap-3">
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-              }}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-black shadow-[0_0_40px_rgba(255,255,255,0.25)]"
-            >
-              <Sparkles size={23} />
-            </motion.div>
 
-            <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/60 backdrop-blur-xl">
-              Personal Productivity
+          <div className="flex items-center gap-3">
+
+            <div className="flex h-10 w-10 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[4px_4px_0_#111]">
+              <ListTodo size={22} strokeWidth={3} />
+            </div>
+
+            <span className="font-black tracking-[-0.05em]">
+              TODO.STUDIO
             </span>
+
           </div>
 
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div>
-              <h1 className="text-6xl font-black leading-[0.9] tracking-tighter sm:text-7xl lg:text-8xl">
-                GET
-                <span className="block bg-gradient-to-r from-fuchsia-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                  THINGS
-                </span>
-                <span className="block">DONE.</span>
-              </h1>
-
-              <p className="mt-6 max-w-xl text-base leading-7 text-white/50 md:text-lg">
-                Your tasks. Your rules. One brutally simple place to
-                organize everything that needs to get done.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-xl">
-              <div className="rounded-2xl bg-fuchsia-500/10 p-4 text-fuchsia-400">
-                <Zap size={24} />
-              </div>
-
-              <div className="pr-5">
-                <p className="text-xs font-bold uppercase tracking-widest text-white/40">
-                  Productivity
-                </p>
-                <p className="text-xl font-black">
-                  {todos.length === 0
-                    ? "Let's start"
-                    : `${Math.round(
-                        (completedTodos / todos.length) * 100
-                      )}% complete`}
-                </p>
-              </div>
-            </div>
+          <div className="hidden gap-8 text-xs font-black uppercase tracking-widest md:flex">
+            <span>WORK</span>
+            <span>ABOUT</span>
+            <span>FOCUS</span>
           </div>
-        </motion.header>
 
-        {/* STATS */}
-        <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <motion.div
-            whileHover={{ y: -5, scale: 1.02 }}
-            className="group relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl"
+          <Button
+            className="rounded-none border-2 border-black bg-black text-white shadow-[4px_4px_0_#c8ff00] hover:bg-[#ff5a52] hover:text-black"
           >
-            <ListTodo className="mb-5 text-cyan-400" size={28} />
+            MENU
+          </Button>
 
-            <p className="text-sm font-bold uppercase tracking-widest text-white/40">
+        </motion.nav>
+
+        {/* ================= HERO ================= */}
+
+        <section className="relative py-16 md:py-24">
+
+          {/* sticker */}
+
+          <motion.div
+            initial={{ rotate: 12, scale: 0 }}
+            animate={{ rotate: 12, scale: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              delay: 0.3,
+            }}
+            className="absolute right-[8%] top-10 hidden rotate-6 border-2 border-black bg-[#c8ff00] px-5 py-3 text-xs font-black uppercase shadow-[5px_5px_0_#111] md:block"
+          >
+            GET IT
+            <br />
+            DONE →
+          </motion.div>
+
+          <div className="max-w-5xl">
+
+            <p className="mb-5 text-sm font-black uppercase tracking-[0.3em]">
+              ✦ Personal productivity / 2026
+            </p>
+
+            <motion.h1
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="font-black uppercase leading-[0.78] tracking-[-0.07em]"
+            >
+
+              <span className="block text-[17vw] sm:text-[120px] lg:text-[155px]">
+                GET
+              </span>
+
+              <span className="relative inline-block bg-[#ff5a52] px-3 text-[17vw] sm:text-[120px] lg:text-[155px]">
+                SHIT
+              </span>
+
+              <span className="block text-[17vw] sm:text-[120px] lg:text-[155px]">
+                DONE.
+              </span>
+
+            </motion.h1>
+
+            <div className="mt-10 flex max-w-2xl items-start gap-5">
+
+              <div className="h-16 w-3 shrink-0 bg-black" />
+
+              <p className="text-lg font-bold leading-7 md:text-xl">
+                A brutally simple task manager for people
+                who have things to build, deadlines to hit,
+                and absolutely no time to waste.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* ================= STATS ================= */}
+
+        <section className="mb-12 grid border-2 border-black md:grid-cols-3">
+
+          <div className="border-b-2 border-black bg-white p-6 md:border-b-0 md:border-r-2">
+            <p className="text-xs font-black uppercase tracking-widest">
               Total Tasks
             </p>
 
-            <p className="mt-1 text-5xl font-black">{todos.length}</p>
-          </motion.div>
+            <p className="mt-2 text-6xl font-black">
+              {todos.length}
+            </p>
+          </div>
 
-          <motion.div
-            whileHover={{ y: -5, scale: 1.02 }}
-            className="group relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl"
-          >
-            <Circle className="mb-5 text-yellow-400" size={28} />
-
-            <p className="text-sm font-bold uppercase tracking-widest text-white/40">
+          <div className="border-b-2 border-black bg-[#c8ff00] p-6 md:border-b-0 md:border-r-2">
+            <p className="text-xs font-black uppercase tracking-widest">
               Pending
             </p>
 
-            <p className="mt-1 text-5xl font-black">{pendingTodos}</p>
-          </motion.div>
+            <p className="mt-2 text-6xl font-black">
+              {pending}
+            </p>
+          </div>
 
-          <motion.div
-            whileHover={{ y: -5, scale: 1.02 }}
-            className="group relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl"
-          >
-            <CheckCircle2 className="mb-5 text-emerald-400" size={28} />
-
-            <p className="text-sm font-bold uppercase tracking-widest text-white/40">
+          <div className="bg-[#ff5a52] p-6">
+            <p className="text-xs font-black uppercase tracking-widest">
               Completed
             </p>
 
-            <p className="mt-1 text-5xl font-black">{completedTodos}</p>
-          </motion.div>
-        </div>
+            <p className="mt-2 text-6xl font-black">
+              {completed}
+            </p>
+          </div>
 
-        {/* ADD TODO */}
-        <motion.form
-          onSubmit={onSubmitHandler}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12 rounded-[32px] border border-white/10 bg-white/[0.06] p-3 shadow-2xl backdrop-blur-2xl"
-        >
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="relative flex-1">
-              <Plus
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30"
-                size={22}
-              />
+        </section>
 
-              <Input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="What needs to be done?"
-                className="h-16 rounded-[24px] border-white/10 bg-black/40 pl-14 text-lg text-white placeholder:text-white/25 focus-visible:ring-fuchsia-500"
-              />
+        {/* ================= ADD TASK ================= */}
+
+        <section className="mb-16">
+
+          <div className="mb-4 flex items-end justify-between">
+
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em]">
+                New mission
+              </p>
+
+              <h2 className="mt-1 text-4xl font-black uppercase tracking-tight">
+                Add a task.
+              </h2>
             </div>
+
+            <Zap
+              className="hidden md:block"
+              size={38}
+              strokeWidth={3}
+            />
+
+          </div>
+
+          <form
+            onSubmit={onSubmitHandler}
+            className="relative flex flex-col border-2 border-black bg-white p-3 shadow-[8px_8px_0_#111] md:flex-row"
+          >
+
+            <Input
+              value={title}
+              onChange={(e) =>
+                setTitle(e.target.value)
+              }
+              placeholder="WRITE YOUR NEXT MOVE..."
+              className="h-16 rounded-none border-0 bg-transparent text-lg font-black uppercase placeholder:text-black/30 focus-visible:ring-0"
+            />
 
             <Button
               type="submit"
               disabled={loading}
-              className="h-16 rounded-[24px] bg-white px-8 font-black text-black transition-all hover:scale-[1.02] hover:bg-fuchsia-400"
+              className="h-16 rounded-none border-2 border-black bg-[#c8ff00] px-8 text-black shadow-[4px_4px_0_#111] hover:bg-[#ff5a52] md:w-48"
             >
+              <Plus size={22} strokeWidth={3} />
               {loading ? "ADDING..." : "ADD TASK"}
-              <Plus size={20} />
             </Button>
-          </div>
-        </motion.form>
 
-        {/* TODO LIST */}
+          </form>
+
+        </section>
+
+        {/* ================= TASK LIST ================= */}
+
         <section>
-          <div className="mb-6 flex items-center justify-between">
+
+          <div className="mb-8 flex items-end justify-between border-b-2 border-black pb-4">
+
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.3em] text-fuchsia-400">
-                Your workspace
+              <p className="text-xs font-black uppercase tracking-[0.3em]">
+                The list
               </p>
 
-              <h2 className="mt-2 text-3xl font-black tracking-tight">
-                All Tasks
+              <h2 className="text-5xl font-black uppercase tracking-[-0.05em]">
+                Your tasks
               </h2>
             </div>
 
-            <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-white/50">
-              {todos.length} {todos.length === 1 ? "task" : "tasks"}
-            </div>
+            <ArrowUpRight
+              size={42}
+              strokeWidth={3}
+            />
+
           </div>
 
           {todos.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-[36px] border border-dashed border-white/10 bg-white/[0.025] px-6 py-24 text-center"
-            >
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-fuchsia-500/20 to-cyan-500/20">
-                <ListTodo size={36} className="text-white/50" />
-              </div>
 
-              <h3 className="text-2xl font-black">
-                Nothing here yet.
+            <div className="border-2 border-dashed border-black bg-white p-16 text-center">
+
+              <Circle
+                className="mx-auto mb-5"
+                size={45}
+                strokeWidth={2}
+              />
+
+              <h3 className="text-4xl font-black uppercase">
+                Nothing here.
               </h3>
 
-              <p className="mt-2 text-white/40">
-                Add your first task and start crushing your goals.
+              <p className="mt-3 font-bold">
+                Add something before you forget it.
               </p>
-            </motion.div>
+
+            </div>
+
           ) : (
-            <div className="grid gap-4">
-              <AnimatePresence mode="popLayout">
+
+            <div className="space-y-5">
+
+              <AnimatePresence>
+
                 {todos.map((todo, index) => (
-                  <motion.div
+
+                  <motion.article
                     key={todo.id}
                     layout
-                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    initial={{
+                      opacity: 0,
+                      x: -80,
+                      rotate: -2,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                      rotate: 0,
+                    }}
                     exit={{
                       opacity: 0,
-                      scale: 0.8,
                       x: 100,
+                      rotate: 4,
+                    }}
+                    whileHover={{
+                      x: -5,
+                      y: -5,
                     }}
                     transition={{
-                      duration: 0.35,
-                      delay: index * 0.04,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
                     }}
-                    whileHover={{ scale: 1.01 }}
-                    className={`group relative overflow-hidden rounded-[30px] border p-5 backdrop-blur-xl transition-all md:p-6 ${
+                    className={`relative border-2 border-black p-5 shadow-[7px_7px_0_#111] md:p-7 ${
                       todo.completed
-                        ? "border-emerald-500/20 bg-emerald-500/[0.04]"
-                        : "border-white/10 bg-white/[0.045] hover:border-fuchsia-500/30"
+                        ? "bg-[#c8ff00]"
+                        : index % 3 === 0
+                        ? "bg-white"
+                        : index % 3 === 1
+                        ? "bg-[#ff5a52]"
+                        : "bg-[#e6e1d5]"
                     }`}
                   >
-                    {/* Number */}
-                    <div className="absolute right-6 top-5 text-6xl font-black text-white/[0.035]">
-                      {(index + 1).toString().padStart(2, "0")}
+
+                    {/* task number */}
+
+                    <div className="absolute right-5 top-3 text-6xl font-black opacity-10">
+                      {String(index + 1).padStart(2, "0")}
                     </div>
 
-                    <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                      <div className="flex min-w-0 items-start gap-5">
-                        <motion.button
-                          whileTap={{ scale: 0.8 }}
+                    <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+
+                      <div className="flex items-start gap-5">
+
+                        {/* CHECK */}
+
+                        <button
                           onClick={() =>
-                            toggle(todo.id, todo.completed)
+                            toggle(
+                              todo.id,
+                              todo.completed
+                            )
                           }
-                          className={`mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border transition-all ${
+                          className={`mt-1 flex h-12 w-12 shrink-0 items-center justify-center border-2 border-black bg-white transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_#111] ${
                             todo.completed
-                              ? "border-emerald-400 bg-emerald-400 text-black shadow-[0_0_25px_rgba(52,211,153,0.3)]"
-                              : "border-white/15 bg-white/5 text-white/30 hover:border-fuchsia-400 hover:text-fuchsia-400"
+                              ? "bg-black text-[#c8ff00]"
+                              : ""
                           }`}
                         >
                           {todo.completed ? (
-                            <Check size={23} strokeWidth={3} />
+                            <Check
+                              size={27}
+                              strokeWidth={4}
+                            />
                           ) : (
-                            <Circle size={22} />
+                            <Circle
+                              size={25}
+                              strokeWidth={3}
+                            />
                           )}
-                        </motion.button>
+                        </button>
 
-                        <div className="min-w-0">
+                        <div>
+
                           <div className="mb-2 flex flex-wrap items-center gap-3">
-                            <h3
-                              className={`break-words text-xl font-black md:text-2xl ${
-                                todo.completed
-                                  ? "text-white/30 line-through"
-                                  : "text-white"
-                              }`}
-                            >
-                              {todo.title}
-                            </h3>
 
-                            <span
-                              className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${
-                                todo.completed
-                                  ? "bg-emerald-400/10 text-emerald-400"
-                                  : "bg-fuchsia-400/10 text-fuchsia-400"
-                              }`}
-                            >
-                              {todo.completed
-                                ? "Completed"
-                                : "In Progress"}
+                            <span className="border-2 border-black bg-white px-2 py-1 text-[10px] font-black uppercase">
+                              TASK {index + 1}
                             </span>
+
+                            {todo.completed && (
+                              <span className="border-2 border-black bg-black px-2 py-1 text-[10px] font-black uppercase text-white">
+                                DONE
+                              </span>
+                            )}
+
                           </div>
 
+                          <h3
+                            className={`max-w-3xl text-2xl font-black uppercase leading-tight tracking-tight md:text-4xl ${
+                              todo.completed
+                                ? "line-through decoration-4"
+                                : ""
+                            }`}
+                          >
+                            {todo.title}
+                          </h3>
+
                           {todo.description && (
-                            <p className="max-w-2xl text-sm leading-6 text-white/40">
+                            <p className="mt-3 max-w-xl font-bold">
                               {todo.description}
                             </p>
                           )}
+
                         </div>
+
                       </div>
 
-                      <div className="flex shrink-0 gap-2">
+                      {/* ACTIONS */}
+
+                      <div className="flex gap-2">
+
                         <Button
-                          variant="outline"
                           onClick={() =>
-                            toggle(todo.id, todo.completed)
+                            toggle(
+                              todo.id,
+                              todo.completed
+                            )
                           }
-                          className={`h-11 rounded-xl border-white/10 bg-white/5 font-bold hover:bg-white/10 ${
-                            todo.completed
-                              ? "text-yellow-400"
-                              : "text-emerald-400"
-                          }`}
+                          className="h-12 rounded-none border-2 border-black bg-white px-5 font-black text-black shadow-[4px_4px_0_#111] hover:bg-[#c8ff00]"
                         >
                           {todo.completed ? (
                             <>
-                              <Circle size={17} />
-                              Undo
+                              <X size={18} />
+                              UNDO
                             </>
                           ) : (
                             <>
-                              <Check size={17} />
-                              Done
+                              <Check size={18} />
+                              DONE
                             </>
                           )}
                         </Button>
 
                         <Button
-                          variant="outline"
                           onClick={() =>
                             deleteHandler(todo.id)
                           }
-                          className="h-11 rounded-xl border-red-500/10 bg-red-500/5 text-red-400 hover:border-red-500/30 hover:bg-red-500/10"
+                          className="h-12 w-12 rounded-none border-2 border-black bg-black p-0 text-white shadow-[4px_4px_0_#ff5a52] hover:bg-[#ff5a52] hover:text-black"
                         >
-                          <Trash2 size={17} />
+                          <Trash2 size={19} />
                         </Button>
+
                       </div>
+
                     </div>
-                  </motion.div>
+
+                  </motion.article>
+
                 ))}
+
               </AnimatePresence>
+
             </div>
+
           )}
+
         </section>
 
-        {/* FOOTER */}
-        <motion.footer
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-center text-xs font-bold uppercase tracking-[0.2em] text-white/20 md:flex-row md:text-left"
-        >
-          <p>Built for getting things done.</p>
+        {/* ================= BOTTOM POSTER ================= */}
 
-          <p>
-            {completedTodos} / {todos.length} completed
+        <motion.section
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="relative mt-24 overflow-hidden border-2 border-black bg-black p-8 text-white shadow-[10px_10px_0_#ff5a52] md:p-14"
+        >
+
+          <div className="absolute right-10 top-5 text-[100px] font-black leading-none text-[#c8ff00] opacity-20">
+            +
+          </div>
+
+          <p className="relative mb-5 text-xs font-black uppercase tracking-[0.3em] text-[#c8ff00]">
+            Productivity manifesto
           </p>
-        </motion.footer>
+
+          <h2 className="relative max-w-4xl text-5xl font-black uppercase leading-[0.85] tracking-[-0.05em] md:text-8xl">
+            STOP
+            <br />
+            THINKING.
+            <br />
+            START
+            <span className="text-[#ff5a52]"> DOING.</span>
+          </h2>
+
+          <div className="relative mt-8 flex items-center gap-3 font-black uppercase">
+            <MoveUpRight
+              className="text-[#c8ff00]"
+              size={25}
+            />
+            One task at a time.
+          </div>
+
+        </motion.section>
+
+        {/* ================= FOOTER ================= */}
+
+        <footer className="flex flex-col justify-between gap-5 py-10 text-xs font-black uppercase md:flex-row">
+
+          <span>© TODO.STUDIO 2026</span>
+
+          <span>
+            {completed} / {todos.length} COMPLETE
+          </span>
+
+          <span>BUILT TO GET THINGS DONE.</span>
+
+        </footer>
+
       </div>
     </main>
   );
 };
 
-export default Homepage
+export default Homepage;
