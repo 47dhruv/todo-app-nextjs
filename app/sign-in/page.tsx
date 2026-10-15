@@ -1,6 +1,6 @@
 "use client";
 
-import { useSignIn } from "@clerk/nextjs";
+import { useSignIn } from "@clerk/nextjs";  
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import {
@@ -16,10 +16,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
-export default function Page() {
+export default function SignInPage() {
   const router = useRouter();
 
   const { signIn, errors, fetchStatus } = useSignIn();
+
 
   // =========================================================
   // YOUR ORIGINAL LOGIC — NOT CHANGED

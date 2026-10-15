@@ -4,6 +4,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
+
+
+import { useUser, UserButton } from '@clerk/nextjs'
 
 import {
   ArrowUpRight,
@@ -29,9 +33,17 @@ interface Todo {
 }
 
 const Homepage = () => {
+  const { isLoaded, isSignedIn, user } = useUser();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
+  console.log(user)
+
+
+
+
+
+
 
   /* ================= FETCH ================= */
 
@@ -42,8 +54,8 @@ const Homepage = () => {
       );
 
       setTodos(response.data.todo);
-    } catch (error) {
-      console.log(error);
+    } catch (error:any) {
+      console.log(error.response);
       toast.error("Something went wrong");
     }
   };
@@ -61,8 +73,8 @@ const Homepage = () => {
       );
 
       toast.success("Task deleted");
-    } catch (error) {
-      console.log(error);
+    } catch (error:any) {
+      console.log(error );
       toast.error("Task could not be deleted");
     }
   };
@@ -85,9 +97,9 @@ const Homepage = () => {
         prev.map((todo) =>
           todo.id === id
             ? {
-                ...todo,
-                completed: !completed,
-              }
+              ...todo,
+              completed: !completed,
+            }
             : todo
         )
       );
@@ -127,9 +139,9 @@ const Homepage = () => {
       setTitle("");
 
       toast.success("New task added!");
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong");
+    } catch (error:any) {
+      console.log(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message ?? "something went wrong");
     } finally {
       setLoading(false);
     }
@@ -190,36 +202,103 @@ const Homepage = () => {
 
         {/* ================= NAVBAR ================= */}
 
+
+
         <motion.nav
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="flex items-center justify-between border-b-2 border-black pb-5"
+          transition={{ duration: 0.4 }}
+          className="relative z-20 flex flex-wrap items-center justify-between gap-5 border-b-2 border-black pb-5"
         >
-
-          <div className="flex items-center gap-3">
-
-            <div className="flex h-10 w-10 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[4px_4px_0_#111]">
-              <ListTodo size={22} strokeWidth={3} />
+          {/* Logo */}
+          <Link href="/" className="group flex shrink-0 items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[4px_4px_0_#111] transition-transform group-hover:-rotate-6">
+              <ListTodo size={23} strokeWidth={3} />
             </div>
 
-            <span className="font-black tracking-[-0.05em]">
-              TODO.STUDIO
-            </span>
+            <div>
+              <span className="block text-xl font-black uppercase leading-none tracking-[-0.07em] sm:text-2xl">
+                TODO<span className="text-[#ff5a52]">.</span>STUDIO
+              </span>
+              <span className="mt-1 block text-[9px] font-black uppercase tracking-[0.2em] text-black/50">
+                Get things done
+              </span>
+            </div>
+          </Link>
 
+          {/* Navigation links */}
+          <div className="hidden items-center gap-7 text-xs font-black uppercase tracking-widest lg:flex">
+            <a href="#tasks" className="transition-colors hover:text-[#ff5a52]">
+              Work ↗
+            </a>
+
+            <a href="#stats" className="transition-colors hover:text-[#ff5a52]">
+              Progress ↗
+            </a>
+
+            <a href="#add-task" className="transition-colors hover:text-[#ff5a52]">
+              New Task ↗
+            </a>
           </div>
 
-          <div className="hidden gap-8 text-xs font-black uppercase tracking-widest md:flex">
-            <span>WORK</span>
-            <span>ABOUT</span>
-            <span>FOCUS</span>
+          {/* Clerk user section */}
+          <div className="ml-auto flex min-w-0 items-center gap-3">
+            {/* Loading state */}
+            {!isLoaded ? (
+              <div className="flex items-center gap-3">
+                <div className="hidden h-10 w-28 animate-pulse border-2 border-black bg-white sm:block" />
+                <div className="h-12 w-12 animate-pulse border-2 border-black bg-[#c8ff00]" />
+              </div>
+            ) : isSignedIn && user ? (
+              <>
+                {/* User details */}
+                <div className="min-w-0 text-right">
+                  <p className="max-w-[150px] truncate text-xs font-black uppercase sm:max-w-[190px] sm:text-sm">
+                    {user.firstName || user.username || "DOER"}
+                  </p>
+
+                  <p className="max-w-[150px] truncate text-[10px] font-bold text-black/55 sm:max-w-[190px]">
+                    {user.primaryEmailAddress?.emailAddress}
+                  </p>
+
+                  <div className="mt-1 flex items-center justify-end gap-1.5">
+                    <span className="h-2 w-2 rounded-full border border-black bg-[#c8ff00]" />
+                    <span className="text-[9px] font-black uppercase tracking-widest">
+                      Online
+                    </span>
+                  </div>
+                </div>
+
+                {/* Profile avatar and Clerk account menu */}
+                <div className="flex h-[54px] w-[54px] shrink-0 items-center justify-center border-2 border-black bg-[#c8ff00] p-1 shadow-[4px_4px_0_#111] transition-transform hover:-translate-y-1 hover:shadow-[5px_5px_0_#ff5a52]">
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        avatarBox: "!h-10 !w-10 !rounded-none",
+                        userButtonAvatarBox: "!h-10 !w-10 !rounded-none",
+                        userButtonTrigger: "!rounded-none",
+                        userButtonPopoverCard: "!rounded-none !border-2 !border-black",
+                        userButtonPopoverActionButton: "!rounded-none",
+                      },
+                    }}
+                  />
+                </div>
+              </>
+            ) : (
+              /* Signed-out state */
+              <Link
+                href="/sign-in"
+                className="group flex h-12 items-center gap-3 border-2 border-black bg-black px-4 text-xs font-black uppercase tracking-widest text-white shadow-[4px_4px_0_#c8ff00] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:bg-[#c8ff00] hover:text-black hover:shadow-[6px_6px_0_#111]"
+              >
+                Sign In
+                <ArrowUpRight
+                  size={17}
+                  strokeWidth={3}
+                  className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+                />
+              </Link>
+            )}
           </div>
-
-          <Button
-            className="rounded-none border-2 border-black bg-black text-white shadow-[4px_4px_0_#c8ff00] hover:bg-[#ff5a52] hover:text-black"
-          >
-            MENU
-          </Button>
-
         </motion.nav>
 
         {/* ================= HERO ================= */}
@@ -288,7 +367,7 @@ const Homepage = () => {
 
         {/* ================= STATS ================= */}
 
-        <section className="mb-12 grid border-2 border-black md:grid-cols-3">
+        <section id="stats" className="mb-12 grid border-2 border-black md:grid-cols-3">
 
           <div className="border-b-2 border-black bg-white p-6 md:border-b-0 md:border-r-2">
             <p className="text-xs font-black uppercase tracking-widest">
@@ -324,8 +403,7 @@ const Homepage = () => {
 
         {/* ================= ADD TASK ================= */}
 
-        <section className="mb-16">
-
+        <section id="add-task" className="mb-16">
           <div className="mb-4 flex items-end justify-between">
 
             <div>
@@ -375,8 +453,7 @@ const Homepage = () => {
 
         {/* ================= TASK LIST ================= */}
 
-        <section>
-
+        <section id="tasks">
           <div className="mb-8 flex items-end justify-between border-b-2 border-black pb-4">
 
             <div>
@@ -451,15 +528,14 @@ const Homepage = () => {
                       stiffness: 300,
                       damping: 20,
                     }}
-                    className={`relative border-2 border-black p-5 shadow-[7px_7px_0_#111] md:p-7 ${
-                      todo.completed
+                    className={`relative border-2 border-black p-5 shadow-[7px_7px_0_#111] md:p-7 ${todo.completed
                         ? "bg-[#c8ff00]"
                         : index % 3 === 0
-                        ? "bg-white"
-                        : index % 3 === 1
-                        ? "bg-[#ff5a52]"
-                        : "bg-[#e6e1d5]"
-                    }`}
+                          ? "bg-white"
+                          : index % 3 === 1
+                            ? "bg-[#ff5a52]"
+                            : "bg-[#e6e1d5]"
+                      }`}
                   >
 
                     {/* task number */}
@@ -481,11 +557,10 @@ const Homepage = () => {
                               todo.completed
                             )
                           }
-                          className={`mt-1 flex h-12 w-12 shrink-0 items-center justify-center border-2 border-black bg-white transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_#111] ${
-                            todo.completed
+                          className={`mt-1 flex h-12 w-12 shrink-0 items-center justify-center border-2 border-black bg-white transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_#111] ${todo.completed
                               ? "bg-black text-[#c8ff00]"
                               : ""
-                          }`}
+                            }`}
                         >
                           {todo.completed ? (
                             <Check
@@ -517,11 +592,10 @@ const Homepage = () => {
                           </div>
 
                           <h3
-                            className={`max-w-3xl text-2xl font-black uppercase leading-tight tracking-tight md:text-4xl ${
-                              todo.completed
+                            className={`max-w-3xl text-2xl font-black uppercase leading-tight tracking-tight md:text-4xl ${todo.completed
                                 ? "line-through decoration-4"
                                 : ""
-                            }`}
+                              }`}
                           >
                             {todo.title}
                           </h3>
