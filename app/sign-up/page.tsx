@@ -25,6 +25,7 @@ const Page = () => {
   const router = useRouter();
   const { signUp, errors, fetchStatus } = useSignUp();
 
+  // Existing signup and verification logic is intentionally unchanged.
   const handelSubmit = async function (formdata: FormData) {
     const email = formdata.get("email") as string;
     const password = formdata.get("password") as string;
@@ -96,345 +97,275 @@ const Page = () => {
     signUp.missingFields.length === 0;
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#f1eee5] text-[#111]">
-      {/* Background decorations */}
+    <main className="relative min-h-screen overflow-hidden bg-[#171717] text-[#f5f5f5]">
+      {/* Same charcoal canvas and subtle dotted texture as the dashboard */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.12]"
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 opacity-30"
         style={{
-          backgroundImage:
-            "radial-gradient(#111 1px, transparent 1px)",
-          backgroundSize: "18px 18px",
+          backgroundImage: "radial-gradient(#555 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
         }}
       />
+      <div aria-hidden="true" className="pointer-events-none fixed -right-24 top-32 h-72 w-72 rounded-full bg-[#e49385]/10 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none fixed -bottom-28 -left-24 h-80 w-80 rounded-full bg-[#a0d8ce]/10 blur-3xl" />
 
-      <div className="pointer-events-none absolute -right-20 top-44 h-64 w-64 rotate-12 border-2 border-black bg-[#c8ff00] opacity-70" />
-      <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full border-2 border-black bg-[#ff5a52] opacity-80" />
-
-      {/* Navbar */}
-      <nav className="relative z-10 flex items-center justify-between border-b-2 border-black px-5 py-4 sm:px-10 lg:px-16">
-        <Link href="/" className="group flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[3px_3px_0_#111] transition-transform group-hover:-rotate-6">
-            <Check size={24} strokeWidth={3} />
-          </div>
-
-          <span className="text-xl font-black uppercase tracking-[-0.07em] sm:text-2xl">
-            TODO<span className="text-[#ff5a52]">.</span>STUDIO
-          </span>
-        </Link>
-
-        <Link
-          href="/sign-in"
-          className="flex items-center gap-2 border-2 border-black bg-white px-4 py-2 text-xs font-black uppercase tracking-wider transition-all hover:bg-[#c8ff00] sm:text-sm"
-        >
-          Sign In <ArrowUpRight size={16} />
-        </Link>
-      </nav>
-
-      {/* Main content */}
-      <section className="relative z-10 mx-auto grid min-h-[calc(100vh-130px)] max-w-7xl items-center gap-12 px-5 py-12 sm:px-10 lg:grid-cols-[1fr_0.85fr] lg:gap-20 lg:px-16">
-        {/* Left editorial section */}
-        <motion.div
-          initial={{ opacity: 0, x: -25 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="relative"
-        >
-          <div className="mb-6 inline-flex -rotate-2 items-center gap-2 border-2 border-black bg-[#ff5a52] px-4 py-2 text-xs font-black uppercase tracking-[0.15em] shadow-[4px_4px_0_#111] sm:text-sm">
-            <Sparkles size={16} />
-            Your next chapter starts here
-          </div>
-
-          <h1 className="text-[18vw] font-black uppercase leading-[0.76] tracking-[-0.09em] sm:text-[110px] lg:text-[125px]">
-            JOIN
-            <br />
-            THE
-            <br />
-            <span className="relative inline-block">
-              DOERS
-              <span className="absolute -bottom-1 left-0 -z-10 h-5 w-full -rotate-2 bg-[#c8ff00] sm:h-7" />
-            </span>
-            <span className="text-[#ff5a52]">.</span>
-          </h1>
-
-          <p className="mt-8 max-w-md text-base font-medium leading-relaxed sm:text-lg">
-            Big ideas deserve a place to grow. Create your account, organize
-            your tasks, and start turning plans into progress.
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 border-2 border-black bg-white px-4 py-3 shadow-[4px_4px_0_#111]">
-              <Check size={17} strokeWidth={3} />
-              <span className="text-xs font-black uppercase sm:text-sm">
-                Get organized
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 border-2 border-black bg-[#c8ff00] px-4 py-3 shadow-[4px_4px_0_#111]">
-              <Sparkles size={17} />
-              <span className="text-xs font-black uppercase sm:text-sm">
-                Make progress
-              </span>
-            </div>
-          </div>
-
-          <div className="mt-12 hidden items-center gap-4 lg:flex">
-            <div className="h-[2px] w-16 bg-black" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em]">
-              Less chaos. More doing.
-            </span>
-          </div>
-
-          <div className="absolute -right-2 top-0 hidden rotate-12 border-2 border-black bg-[#c8ff00] p-4 shadow-[4px_4px_0_#111] xl:block">
-            <UserPlus size={30} strokeWidth={2.5} />
-          </div>
-        </motion.div>
-
-        {/* Signup / Verification card */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
+      <div className="relative mx-auto flex min-h-screen max-w-[1500px] flex-col px-4 py-4 sm:px-7 lg:px-10">
+        {/* Dashboard-style rounded navigation */}
+        <motion.nav
+          initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="relative mx-auto w-full max-w-lg"
+          transition={{ duration: 0.35 }}
+          className="relative z-10 flex items-center justify-between gap-4 rounded-[24px] border border-white/5 bg-[#292929] px-4 py-3 sm:px-6"
         >
-          {/* Tape decoration */}
-          <div className="absolute -top-4 left-1/2 z-20 h-8 w-28 -translate-x-1/2 rotate-[-4deg] border-x border-black/10 bg-[#c8ff00]/90 shadow-sm" />
+          <Link href="/" className="group flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e49385] text-[#202020] transition-transform group-hover:rotate-[-5deg]">
+              <Check size={23} strokeWidth={2.8} />
+            </div>
+            <div>
+              <span className="block text-lg font-bold tracking-tight sm:text-xl">
+                TODO<span className="text-[#e49385]">.</span>STUDIO
+              </span>
+              <span className="hidden text-[10px] font-medium tracking-[0.18em] text-white/45 sm:block">
+                PLAN YOUR DAY
+              </span>
+            </div>
+          </Link>
 
-          <div className="border-2 border-black bg-white p-6 shadow-[8px_8px_0_#111] sm:p-9 sm:shadow-[12px_12px_0_#111]">
-            <AnimatePresence mode="wait">
-              {isVerifying ? (
-                <motion.div
-                  key="verify"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="mb-6 flex items-start justify-between gap-4">
-                    <div>
-                      <div className="mb-3 inline-flex items-center gap-2 border-2 border-black bg-[#c8ff00] px-3 py-1.5 text-[10px] font-black uppercase tracking-widest sm:text-xs">
-                        <ShieldCheck size={14} />
-                        Step 02 / 02
+          <div className="flex items-center gap-3">
+            <span className="hidden text-sm text-white/50 md:inline">Already have an account?</span>
+            <Link
+              href="/sign-in"
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-[#3b3b3b] px-3 text-sm font-medium transition-colors hover:bg-[#e49385] hover:text-[#202020] sm:px-4"
+            >
+              Sign in <ArrowUpRight size={16} />
+            </Link>
+          </div>
+        </motion.nav>
+
+        <section className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 items-center gap-10 py-10 lg:grid-cols-[1fr_0.88fr] lg:gap-16 lg:py-14">
+          {/* Intro panel */}
+          <motion.div
+            initial={{ opacity: 0, x: -18 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.45 }}
+            className="relative px-1 sm:px-3"
+          >
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#e49385]/30 bg-[#e49385]/10 px-4 py-2 text-xs font-semibold tracking-wide text-[#f0b1a5] sm:text-sm">
+              <Sparkles size={15} />
+              A calmer way to get things done
+            </div>
+
+            <h1 className="max-w-2xl text-5xl font-semibold leading-[0.98] tracking-[-0.055em] sm:text-7xl lg:text-[88px]">
+              Make room
+              <br />
+              for <span className="text-[#e49385]">what</span>
+              <br />
+              matters<span className="text-[#a0d8ce]">.</span>
+            </h1>
+
+            <p className="mt-6 max-w-lg text-base leading-7 text-white/55 sm:text-lg sm:leading-8">
+              Bring your plans, routines, and everyday tasks into one focused space. Create your account and make progress one task at a time.
+            </p>
+
+            <div className="mt-8 grid max-w-lg grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-[#242424] p-4">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#a0d8ce]/15 text-[#a0d8ce]"><Check size={19} /></span>
+                <div>
+                  <p className="text-sm font-semibold">Stay organized</p>
+                  <p className="mt-1 text-xs text-white/40">One clear list</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-[#242424] p-4">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e49385]/15 text-[#e49385]"><Sparkles size={19} /></span>
+                <div>
+                  <p className="text-sm font-semibold">Build momentum</p>
+                  <p className="mt-1 text-xs text-white/40">Small daily wins</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-9 flex items-center gap-3 text-xs font-medium tracking-wide text-white/35">
+              <span className="h-px w-10 bg-[#e49385]/70" />
+              LESS CHAOS. MORE DOING.
+            </div>
+          </motion.div>
+
+          {/* Signup / email verification card */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.1 }}
+            className="mx-auto w-full max-w-[500px]"
+          >
+            <div className="overflow-hidden rounded-[28px] border border-white/[0.07] bg-[#242424] shadow-[0_24px_80px_rgba(0,0,0,0.25)]">
+              <div className="flex items-center justify-between border-b border-white/[0.07] px-6 py-5 sm:px-8">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a0d8ce]">
+                    {isVerifying ? "Step 02 / 02" : "Step 01 / 02"}
+                  </p>
+                  <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+                    {isVerifying ? "Check your email" : "Create account"}
+                    <span className="text-[#e49385]">.</span>
+                  </h2>
+                </div>
+                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${isVerifying ? "bg-[#e49385]/15 text-[#e49385]" : "bg-[#a0d8ce]/15 text-[#a0d8ce]"}`}>
+                  {isVerifying ? <Mail size={23} /> : <KeyRound size={23} />}
+                </div>
+              </div>
+
+              <div className="p-6 sm:p-8">
+                <AnimatePresence mode="wait">
+                  {isVerifying ? (
+                    <motion.div
+                      key="verify"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p className="mb-6 text-sm leading-6 text-white/50">
+                        We sent a verification code to your email. Enter it below to finish creating your account.
+                      </p>
+
+                      <form action={handelVerify} className="space-y-5">
+                        <div className="space-y-2">
+                          <label htmlFor="code" className="block text-sm font-medium text-white/75">Verification code</label>
+                          <Input
+                            id="code"
+                            name="code"
+                            type="text"
+                            placeholder="Enter your code"
+                            required
+                            autoComplete="one-time-code"
+                            className="h-12 rounded-xl border border-white/10 bg-[#303030] px-4 text-base tracking-[0.18em] text-white placeholder:tracking-normal placeholder:text-white/25 focus-visible:border-[#a0d8ce] focus-visible:ring-0 focus-visible:ring-offset-0"
+                          />
+                        </div>
+
+                        <Button
+                          type="submit"
+                          disabled={fetchStatus === "fetching"}
+                          className="h-12 w-full rounded-xl bg-[#e49385] text-sm font-semibold text-[#202020] transition-colors hover:bg-[#efaa9d] disabled:opacity-50"
+                        >
+                          Verify email <ArrowRight className="ml-2" size={17} />
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={async () => {
+                            const result = await signUp?.verifications.sendEmailCode();
+                            if (result?.error) {
+                              toast.error("try again later");
+                            } else {
+                              toast.success("Verification code sent");
+                            }
+                          }}
+                          className="h-11 w-full rounded-xl border border-white/10 bg-transparent text-sm font-medium text-white/75 hover:border-white/20 hover:bg-white/5 hover:text-white"
+                        >
+                          <Mail size={16} className="mr-2" /> Send new code
+                        </Button>
+                      </form>
+
+                      <div className="mt-6 border-t border-white/[0.07] pt-5 text-center text-sm text-white/45">
+                        Wrong email? <Link href="/sign-up" className="font-medium text-[#a0d8ce] hover:text-white">Go back</Link>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="signup"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p className="mb-6 text-sm leading-6 text-white/50">
+                        Set up your account and keep your next steps in one place.
+                      </p>
+
+                      {errors?.global?.[0]?.message && (
+                        <div role="alert" className="mb-5 rounded-xl border border-[#e49385]/30 bg-[#e49385]/10 p-3 text-sm text-[#f0b1a5]">
+                          {errors?.global?.[0]?.message}
+                        </div>
+                      )}
+
+                      <form action={handelSubmit} className="space-y-5">
+                        <div className="space-y-2">
+                          <label htmlFor="email" className="block text-sm font-medium text-white/75">Email address</label>
+                          <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            required
+                            autoComplete="email"
+                            className="h-12 rounded-xl border border-white/10 bg-[#303030] px-4 text-sm text-white placeholder:text-white/25 focus-visible:border-[#a0d8ce] focus-visible:ring-0 focus-visible:ring-offset-0"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="password" className="block text-sm font-medium text-white/75">Password</label>
+                          <Input
+                            id="password"
+                            name="password"
+                            type="password"
+                            placeholder="Create a strong password"
+                            required
+                            autoComplete="new-password"
+                            className="h-12 rounded-xl border border-white/10 bg-[#303030] px-4 text-sm text-white placeholder:text-white/25 focus-visible:border-[#a0d8ce] focus-visible:ring-0 focus-visible:ring-offset-0"
+                          />
+                        </div>
+
+                        <Button
+                          type="submit"
+                          disabled={fetchStatus === "fetching"}
+                          className="h-12 w-full rounded-xl bg-[#e49385] text-sm font-semibold text-[#202020] transition-colors hover:bg-[#efaa9d] disabled:opacity-50"
+                        >
+                          {fetchStatus === "fetching" ? "Creating account..." : "Create account"}
+                          <ArrowRight className="ml-2" size={17} />
+                        </Button>
+                      </form>
+
+                      <div className="my-6 flex items-center gap-3">
+                        <div className="h-px flex-1 bg-white/10" />
+                        <span className="text-xs text-white/35">Already have an account?</span>
+                        <div className="h-px flex-1 bg-white/10" />
                       </div>
 
-                      <h2 className="text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-5xl">
-                        CHECK
-                        <br />
-                        YOUR MAIL<span className="text-[#ff5a52]">.</span>
-                      </h2>
-                    </div>
-
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-black bg-[#ff5a52] shadow-[3px_3px_0_#111] sm:h-14 sm:w-14">
-                      <Mail size={25} />
-                    </div>
-                  </div>
-
-                  <p className="mb-7 text-sm leading-relaxed text-black/70 sm:text-base">
-                    We sent a verification code to your email. Enter it below
-                    to finish creating your account.
-                  </p>
-
-                  <form action={handelVerify} className="space-y-5">
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="code"
-                        className="block text-xs font-black uppercase tracking-widest sm:text-sm"
-                      >
-                        Verification Code
-                      </label>
-
-                      <Input
-                        id="code"
-                        name="code"
-                        type="text"
-                        placeholder="ENTER YOUR CODE"
-                        required
-                        autoComplete="one-time-code"
-                        className="h-16 rounded-none border-2 border-black bg-[#f1eee5] px-4 text-lg font-black tracking-[0.2em] placeholder:text-sm placeholder:tracking-normal focus-visible:ring-0 focus-visible:ring-offset-0"
-                      />
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={fetchStatus === "fetching"}
-                      className="group h-16 w-full rounded-none border-2 border-black bg-black text-sm font-black uppercase tracking-widest text-white transition-all hover:bg-[#c8ff00] hover:text-black disabled:opacity-50"
-                    >
-                      Verify Email
-                      <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={async () => {
-                        const result =
-                          await signUp?.verifications.sendEmailCode();
-
-                        if (result?.error) {
-                          toast.error("try again later");
-                        } else {
-                          toast.success("Verification code sent");
-                        }
-                      }}
-                      className="h-12 w-full rounded-none border-2 border-black bg-white text-xs font-black uppercase tracking-widest hover:bg-[#ff5a52] hover:text-black"
-                    >
-                      <Mail size={16} className="mr-2" />
-                      Send New Code
-                    </Button>
-                  </form>
-
-                  <div className="mt-6 border-t-2 border-dashed border-black/20 pt-5">
-                    <p className="text-center text-xs font-medium text-black/60">
-                      Wrong email?{" "}
                       <Link
-                        href="/sign-up"
-                        className="font-black text-black underline decoration-2 underline-offset-4 hover:bg-[#c8ff00]"
+                        href="/sign-in"
+                        className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#303030] text-sm font-medium text-white/75 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
                       >
-                        Go back
+                        <ArrowLeft size={16} /> Sign in to your account
                       </Link>
-                    </p>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="signup"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="mb-6 flex items-start justify-between gap-4">
-                    <div>
-                      <div className="mb-3 inline-flex items-center gap-2 border-2 border-black bg-[#c8ff00] px-3 py-1.5 text-[10px] font-black uppercase tracking-widest sm:text-xs">
-                        <UserPlus size={14} />
-                        Step 01 / 02
+
+                      <div className="mt-5 flex items-start gap-3 rounded-xl border border-white/[0.07] bg-[#202020] p-3.5">
+                        <ShieldCheck size={18} className="mt-0.5 shrink-0 text-[#a0d8ce]" />
+                        <p className="text-xs leading-5 text-white/45">
+                          Your account is protected by email verification. Keep your password private and secure.
+                        </p>
                       </div>
-
-                      <h2 className="text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-5xl">
-                        MAKE
-                        <br />
-                        IT OFFICIAL<span className="text-[#ff5a52]">.</span>
-                      </h2>
-                    </div>
-
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[3px_3px_0_#111] sm:h-14 sm:w-14">
-                      <KeyRound size={25} />
-                    </div>
-                  </div>
-
-                  <p className="mb-7 text-sm leading-relaxed text-black/70 sm:text-base">
-                    Create your account. Your goals aren't going to tackle
-                    themselves.
-                  </p>
-
-                  {errors?.global?.[0]?.message && (
-                    <div
-                      role="alert"
-                      className="mb-5 border-2 border-black bg-[#ff5a52] p-4 text-sm font-bold"
-                    >
-                      {errors?.global?.[0]?.message}
-                    </div>
+                    </motion.div>
                   )}
+                </AnimatePresence>
 
-                  <form action={handelSubmit} className="space-y-5">
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="email"
-                        className="block text-xs font-black uppercase tracking-widest sm:text-sm"
-                      >
-                        Email Address
-                      </label>
+                {/* Clerk CAPTCHA mount point */}
+                <div id="clerk-captcha" />
+              </div>
+            </div>
 
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        required
-                        autoComplete="email"
-                        className="h-14 rounded-none border-2 border-black bg-[#f1eee5] px-4 font-medium placeholder:text-black/40 focus-visible:ring-0 focus-visible:ring-offset-0"
-                      />
-                    </div>
+            <div className="mt-4 flex items-center justify-between px-1 text-[10px] font-medium uppercase tracking-[0.16em] text-white/30 sm:text-xs">
+              <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#a0d8ce]" /> Your space. Your rules.</span>
+              <span>Est. 2026</span>
+            </div>
+          </motion.div>
+        </section>
 
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="password"
-                        className="block text-xs font-black uppercase tracking-widest sm:text-sm"
-                      >
-                        Password
-                      </label>
-
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="CREATE A STRONG PASSWORD"
-                        required
-                        autoComplete="new-password"
-                        className="h-14 rounded-none border-2 border-black bg-[#f1eee5] px-4 font-medium placeholder:text-xs placeholder:text-black/40 focus-visible:ring-0 focus-visible:ring-offset-0"
-                      />
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={fetchStatus === "fetching"}
-                      className="group h-16 w-full rounded-none border-2 border-black bg-black text-sm font-black uppercase tracking-widest text-white transition-all hover:bg-[#c8ff00] hover:text-black disabled:opacity-50"
-                    >
-                      {fetchStatus === "fetching"
-                        ? "Creating Account..."
-                        : "Create Account"}
-                      <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                  </form>
-
-                  <div className="my-6 flex items-center gap-3">
-                    <div className="h-[2px] flex-1 bg-black/15" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-black/40">
-                      Already one of us?
-                    </span>
-                    <div className="h-[2px] flex-1 bg-black/15" />
-                  </div>
-
-                  <Link
-                    href="/sign-in"
-                    className="flex h-14 w-full items-center justify-center gap-2 border-2 border-black bg-white text-xs font-black uppercase tracking-widest transition-all hover:bg-[#ff5a52] sm:text-sm"
-                  >
-                    <ArrowLeft size={16} />
-                    Sign In To Your Account
-                  </Link>
-
-                  <div className="mt-5 flex items-start gap-3 border-2 border-black/15 bg-[#f1eee5] p-3">
-                    <ShieldCheck
-                      size={18}
-                      className="mt-0.5 shrink-0"
-                    />
-                    <p className="text-[11px] leading-relaxed text-black/65">
-                      Your account is protected by email verification. Keep
-                      your password private and secure.
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Clerk CAPTCHA mount point */}
-            <div id="clerk-captcha" />
-          </div>
-
-          <div className="mt-5 flex items-center justify-between text-[10px] font-black uppercase tracking-widest sm:text-xs">
-            <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full border border-black bg-[#c8ff00]" />
-              YOUR SPACE. YOUR RULES.
-            </span>
-            <span>EST. 2026</span>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Footer */}
-      <footer className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-t-2 border-black px-5 py-5 text-[10px] font-black uppercase tracking-[0.15em] sm:px-10 sm:text-xs lg:px-16">
-        <span>© TODO.STUDIO 2026</span>
-        <span>BUILT FOR DOERS. NOT DREAMERS.</span>
-      </footer>
+        <footer className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.07] py-5 text-[10px] font-medium uppercase tracking-[0.14em] text-white/30 sm:text-xs">
+          <span>© TODO.STUDIO 2026</span>
+          <span>Built for better days.</span>
+        </footer>
+      </div>
     </main>
   );
 };

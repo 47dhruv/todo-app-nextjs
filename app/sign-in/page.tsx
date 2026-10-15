@@ -102,16 +102,16 @@ export default function SignInPage() {
 
   if (signIn.status === "needs_client_trust") {
     return (
-      <main className="min-h-screen overflow-hidden bg-[#f1eee5] text-[#111]">
+      <main className="min-h-screen overflow-hidden bg-[#171717] text-white">
         {/* Background */}
         <div className="pointer-events-none fixed inset-0">
-          <div className="absolute -right-20 top-20 h-64 w-64 rotate-6 bg-[#c8ff00]" />
+          <div className="absolute -right-20 top-20 h-64 w-64 rotate-6 bg-[#e49385]" />
 
-          <div className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[#ff5a52]" />
+          <div className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[#a2d7cb]/10 blur-3xl" />
 
-          <div className="absolute right-10 top-24 h-40 w-40 opacity-30 [background-image:radial-gradient(#111_1px,transparent_1px)] [background-size:10px_10px]" />
+          <div className="absolute right-10 top-24 h-40 w-40 opacity-30 [background-image:radial-gradient(#555_1px,transparent_1px)] [background-size:10px_10px]" />
 
-          <div className="absolute left-10 top-1/2 h-32 w-32 opacity-20 [background-image:radial-gradient(#111_1px,transparent_1px)] [background-size:8px_8px]" />
+          <div className="absolute left-10 top-1/2 h-32 w-32 opacity-20 [background-image:radial-gradient(#555_1px,transparent_1px)] [background-size:8px_8px]" />
         </div>
 
         <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-6 md:px-10 lg:px-14">
@@ -120,10 +120,10 @@ export default function SignInPage() {
           <motion.nav
             initial={{ y: -30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="flex items-center justify-between border-b-2 border-black pb-5"
+            className="flex items-center justify-between rounded-2xl border border-white/5 bg-[#292929] px-5 py-4 sm:px-7"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[4px_4px_0_#111]">
+              <div className="flex h-10 w-10 items-center justify-center border border-white/10 bg-[#e49385] shadow-lg">
                 <Sparkles size={21} strokeWidth={3} />
               </div>
 
@@ -138,7 +138,7 @@ export default function SignInPage() {
               <span>FOCUS</span>
             </div>
 
-            <div className="border-2 border-black bg-black px-4 py-2 text-xs font-black text-white shadow-[4px_4px_0_#c8ff00]">
+            <div className="border border-white/10 bg-[#e49385] px-4 py-2 text-xs font-black text-white shadow-lg">
               SECURE
             </div>
           </motion.nav>
@@ -162,7 +162,7 @@ export default function SignInPage() {
                 initial={{ scale: 0, rotate: 15 }}
                 animate={{ scale: 1, rotate: 8 }}
                 transition={{ delay: 0.3 }}
-                className="absolute -right-4 -top-8 z-20 border-2 border-black bg-[#ff5a52] px-4 py-3 text-xs font-black uppercase shadow-[5px_5px_0_#111] md:-right-8"
+                className="absolute -right-4 -top-8 z-20 border border-white/10 bg-[#e49385] px-4 py-3 text-xs font-black uppercase shadow-lg md:-right-8"
               >
                 CHECK
                 <br />
@@ -170,12 +170,12 @@ export default function SignInPage() {
               </motion.div>
 
               {/* Card */}
-              <div className="border-2 border-black bg-white p-6 shadow-[10px_10px_0_#111] md:p-10">
+              <div className="border border-white/10 bg-[#222222] p-6 shadow-2xl md:p-10">
 
                 {/* Icon */}
                 <div className="mb-8 flex items-center justify-between">
 
-                  <div className="flex h-16 w-16 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[5px_5px_0_#111]">
+                  <div className="flex h-16 w-16 items-center justify-center border border-white/10 bg-[#e49385] shadow-lg">
                     <ShieldCheck
                       size={32}
                       strokeWidth={3}
@@ -194,7 +194,7 @@ export default function SignInPage() {
 
                 <h1 className="text-6xl font-black uppercase leading-[0.8] tracking-[-0.06em] md:text-7xl">
                   VERIFY
-                  <span className="block text-[#ff5a52]">
+                  <span className="block text-[#e49385]">
                     ACCESS.
                   </span>
                 </h1>
@@ -224,13 +224,13 @@ export default function SignInPage() {
                       type="text"
                       placeholder="ENTER CODE"
                       autoComplete="one-time-code"
-                      className="h-16 rounded-none border-2 border-black bg-[#f1eee5] text-xl font-black tracking-[0.25em] placeholder:text-black/25 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="h-16 rounded-none border border-white/10 bg-[#303030] text-xl font-black tracking-[0.25em] placeholder:text-white/25 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </div>
 
                   <Button
                     type="submit"
-                    className="h-16 w-full rounded-none border-2 border-black bg-black text-lg font-black text-white shadow-[5px_5px_0_#c8ff00] transition-all hover:bg-[#c8ff00] hover:text-black"
+                    className="h-16 w-full rounded-none border border-white/10 bg-black text-lg font-black text-white shadow-lg transition-all hover:bg-[#f0a497] hover:text-[#171717]"
                   >
                     VERIFY CODE
                     <ArrowRight
@@ -244,7 +244,7 @@ export default function SignInPage() {
                     onClick={() =>
                       signIn.mfa.sendEmailCode()
                     }
-                    className="h-14 w-full rounded-none border-2 border-black bg-white font-black text-black shadow-[4px_4px_0_#111] hover:bg-[#ff5a52]"
+                    className="h-14 w-full rounded-none border border-white/10 bg-[#303030] font-black text-white shadow-lg hover:bg-[#f0a497]"
                   >
                     SEND NEW CODE
                   </Button>
@@ -269,7 +269,7 @@ export default function SignInPage() {
   // =========================================================
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#f1eee5] text-[#111]">
+    <main className="min-h-screen overflow-hidden bg-[#171717] text-white">
 
       {/* ================= BACKGROUND ================= */}
 
@@ -285,7 +285,7 @@ export default function SignInPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute -right-16 top-24 h-64 w-64 bg-[#c8ff00]"
+          className="absolute -right-16 top-24 h-64 w-64 rounded-full bg-[#e49385]/10 blur-3xl"
         />
 
         {/* red shape */}
@@ -298,13 +298,13 @@ export default function SignInPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[#ff5a52]"
+          className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[#a2d7cb]/10 blur-3xl"
         />
 
         {/* dot pattern */}
-        <div className="absolute right-10 top-20 h-40 w-40 opacity-30 [background-image:radial-gradient(#111_1px,transparent_1px)] [background-size:10px_10px]" />
+        <div className="absolute right-10 top-20 h-40 w-40 opacity-30 [background-image:radial-gradient(#555_1px,transparent_1px)] [background-size:10px_10px]" />
 
-        <div className="absolute bottom-20 left-10 h-32 w-32 opacity-20 [background-image:radial-gradient(#111_1px,transparent_1px)] [background-size:8px_8px]" />
+        <div className="absolute bottom-20 left-10 h-32 w-32 opacity-20 [background-image:radial-gradient(#555_1px,transparent_1px)] [background-size:8px_8px]" />
 
       </div>
 
@@ -315,12 +315,12 @@ export default function SignInPage() {
         <motion.nav
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="flex items-center justify-between border-b-2 border-black pb-5"
+          className="flex items-center justify-between rounded-2xl border border-white/5 bg-[#292929] px-5 py-4 sm:px-7"
         >
 
           <div className="flex items-center gap-3">
 
-            <div className="flex h-10 w-10 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[4px_4px_0_#111]">
+            <div className="flex h-10 w-10 items-center justify-center border border-white/10 bg-[#e49385] shadow-lg">
               <Sparkles
                 size={21}
                 strokeWidth={3}
@@ -339,7 +339,7 @@ export default function SignInPage() {
             <span>FOCUS</span>
           </div>
 
-          <div className="border-2 border-black bg-black px-4 py-2 text-xs font-black text-white shadow-[4px_4px_0_#c8ff00]">
+          <div className="border border-white/10 bg-[#e49385] px-4 py-2 text-xs font-black text-white shadow-lg">
             SIGN IN
           </div>
 
@@ -359,7 +359,7 @@ export default function SignInPage() {
               transition={{ duration: 0.5 }}
             >
 
-              <div className="mb-6 inline-block rotate-[-2deg] border-2 border-black bg-[#c8ff00] px-4 py-2 text-xs font-black uppercase shadow-[4px_4px_0_#111]">
+              <div className="mb-6 inline-block rotate-[-2deg] border border-white/10 bg-[#e49385] px-4 py-2 text-xs font-black uppercase shadow-lg">
                 Welcome back →
               </div>
 
@@ -377,7 +377,7 @@ export default function SignInPage() {
                   BACK
                 </span>
 
-                <span className="inline-block bg-[#ff5a52] px-3 text-[18vw] sm:text-[110px] lg:text-[130px]">
+                <span className="inline-block bg-[#e49385] px-3 text-[18vw] sm:text-[110px] lg:text-[130px]">
                   TO IT.
                 </span>
 
@@ -435,16 +435,16 @@ export default function SignInPage() {
                   y: 0,
                 }}
                 transition={{ delay: 0.5 }}
-                className="absolute left-1/2 top-[-18px] z-20 h-10 w-32 -translate-x-1/2 rotate-[-3deg] border border-black/20 bg-[#d9d3b8]/90"
+                className="absolute left-1/2 top-[-18px] z-20 h-10 w-32 -translate-x-1/2 rotate-[-3deg] border border-white/10/20 bg-[#e49385]/70"
               />
 
-              <div className="border-2 border-black bg-white p-6 shadow-[10px_10px_0_#111] md:p-10">
+              <div className="border border-white/10 bg-[#222222] p-6 shadow-2xl md:p-10">
 
                 {/* CARD HEADER */}
 
                 <div className="mb-8 flex items-center justify-between">
 
-                  <div className="flex h-14 w-14 items-center justify-center border-2 border-black bg-[#f1eee5] shadow-[4px_4px_0_#111]">
+                  <div className="flex h-14 w-14 items-center justify-center border border-white/10 bg-[#f1eee5] shadow-lg">
                     <LockKeyhole
                       size={27}
                       strokeWidth={3}
@@ -463,7 +463,7 @@ export default function SignInPage() {
 
                 <h2 className="text-5xl font-black uppercase leading-[0.85] tracking-[-0.05em]">
                   SIGN
-                  <span className="block text-[#ff5a52]">
+                  <span className="block text-[#e49385]">
                     IN.
                   </span>
                 </h2>
@@ -501,7 +501,7 @@ export default function SignInPage() {
                         type="email"
                         name="email"
                         placeholder="YOU@EXAMPLE.COM"
-                        className="h-16 rounded-none border-2 border-black bg-[#f1eee5] pl-12 font-black placeholder:text-black/25 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="h-16 rounded-none border border-white/10 bg-[#303030] pl-12 font-black placeholder:text-white/25 focus-visible:ring-0 focus-visible:ring-offset-0"
                       />
 
                     </div>
@@ -532,7 +532,7 @@ export default function SignInPage() {
                         type="password"
                         name="password"
                         placeholder="••••••••••"
-                        className="h-16 rounded-none border-2 border-black bg-[#f1eee5] pl-12 font-black placeholder:text-black/25 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="h-16 rounded-none border border-white/10 bg-[#303030] pl-12 font-black placeholder:text-white/25 focus-visible:ring-0 focus-visible:ring-offset-0"
                       />
 
                     </div>
@@ -542,7 +542,7 @@ export default function SignInPage() {
                   {/* ERRORS */}
 
                   {errors?.global?.[0]?.message && (
-                    <div className="border-2 border-black bg-[#ff5a52] p-4 text-sm font-black">
+                    <div className="border border-white/10 bg-[#e49385] p-4 text-sm font-black">
                       {errors.global[0].message}
                     </div>
                   )}
@@ -554,7 +554,7 @@ export default function SignInPage() {
                   <Button
                     type="submit"
                     disabled={fetchStatus === "fetching"}
-                    className="h-16 w-full rounded-none border-2 border-black bg-black text-lg font-black text-white shadow-[5px_5px_0_#c8ff00] transition-all hover:bg-[#c8ff00] hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+                    className="h-16 w-full rounded-none border border-white/10 bg-black text-lg font-black text-white shadow-lg transition-all hover:bg-[#f0a497] hover:text-[#171717] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {fetchStatus === "fetching"
                       ? "CHECKING..."
@@ -570,7 +570,7 @@ export default function SignInPage() {
 
                 {/* CARD FOOTER */}
 
-                <div className="mt-7 flex items-center justify-between border-t-2 border-black pt-5 text-[10px] font-black uppercase tracking-widest">
+                <div className="mt-7 flex items-center justify-between border-t border-white/10 pt-5 text-[10px] font-black uppercase tracking-widest">
 
                   <span className="flex items-center gap-2">
                     <Check size={14} strokeWidth={4} />
@@ -602,7 +602,7 @@ export default function SignInPage() {
 
         {/* ================= FOOTER ================= */}
 
-        <footer className="flex flex-col justify-between gap-4 border-t-2 border-black py-6 text-xs font-black uppercase md:flex-row">
+        <footer className="flex flex-col justify-between gap-4 border-t border-white/10 py-6 text-xs font-black uppercase md:flex-row">
 
           <span>© TODO.STUDIO 2026</span>
 

@@ -15,34 +15,27 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const ForgotPassword = () => {
   const router = useRouter();
-
   const [password, setPassword] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [code, setCode] = useState("");
   const [codesent, setCodesent] = useState(false);
-
   const { signIn, fetchStatus, errors } = useSignIn();
 
-  // =========================================================
-  // YOUR ORIGINAL LOGIC — UNCHANGED
-  // =========================================================
-
+  // Existing password-reset logic preserved.
   const sendResetCode = async (formData: FormData) => {
     const emailAddress = formData.get("email") as string;
-
     const { error: createError } = await signIn.create({
       identifier: emailAddress,
     });
 
     if (createError) {
       console.log(createError);
-      toast.error("Email is not registered")
+      toast.error("Email is not registered");
       return;
     }
 
@@ -50,65 +43,42 @@ const ForgotPassword = () => {
       await signIn.resetPasswordEmailCode.sendCode();
 
     console.log(sendCodeError);
-
     if (sendCodeError) {
-      console.error(
-        JSON.stringify(sendCodeError, null, 2)
-      );
-      toast.error("Code not sent")
+      console.error(JSON.stringify(sendCodeError, null, 2));
+      toast.error("Code not sent");
       return;
     }
-
     setCodesent(true);
   };
 
   const verifyCode = async function (formData: FormData) {
     const code = formData.get("code") as string;
-
-    const { error } =
-      await signIn.resetPasswordEmailCode.verifyCode({
-        code: code,
-      });
-
+    const { error } = await signIn.resetPasswordEmailCode.verifyCode({ code });
     console.log(error);
 
     if (error) {
-      console.error(
-        JSON.stringify(error, null, 2)
-      );
-      toast.error("Invalid code")
+      console.error(JSON.stringify(error, null, 2));
+      toast.error("Invalid code");
       return;
     }
-
     console.log(signIn.status);
   };
 
-  const submitNewPassword = async function (
-    formData: FormData
-  ) {
-    const password = formData.get(
-      "newPassword"
-    ) as string;
-
-    const { error } =
-      await signIn.resetPasswordEmailCode.submitPassword({
-        password: password,
-      });
-
+  const submitNewPassword = async function (formData: FormData) {
+    const password = formData.get("newPassword") as string;
+    const { error } = await signIn.resetPasswordEmailCode.submitPassword({
+      password,
+    });
     console.log(error);
-    
 
     if (error) {
-      console.error(
-        JSON.stringify(error, null, 2)
-      );
-      toast.error("Password is not reset")
+      console.error(JSON.stringify(error, null, 2));
+      toast.error("Password is not reset");
       return;
     }
 
-    toast.success("Password reset successfully")
+    toast.success("Password reset successfully");
     console.log(signIn.status);
-
     if (signIn.status === "complete") {
       await signIn.finalize({
         navigate: ({ decorateUrl, session }) => {
@@ -116,9 +86,7 @@ const ForgotPassword = () => {
             console.log(session.currentTask);
             return;
           }
-
           const url = decorateUrl("/");
-
           if (url.startsWith("http")) {
             window.location.href = url;
           } else {
@@ -129,642 +97,299 @@ const ForgotPassword = () => {
     }
   };
 
-  // =========================================================
-  // UI
-  // =========================================================
+  const inputClass =
+    "h-14 rounded-xl border border-white/10 bg-[#303030] pl-12 text-white placeholder:text-white/30 focus-visible:ring-2 focus-visible:ring-[#e49385] focus-visible:ring-offset-0";
+  const labelClass =
+    "mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/60";
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#f1eee5] text-[#111]">
-
-      {/* =====================================================
-          BACKGROUND
-      ===================================================== */}
-
-      <div className="pointer-events-none fixed inset-0">
-
-        {/* Lime shape */}
-        <motion.div
-          animate={{
-            rotate: [8, -5, 8],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute -right-20 top-24 h-64 w-64 bg-[#c8ff00]"
-        />
-
-        {/* Coral shape */}
-        <motion.div
-          animate={{
-            rotate: [-8, 5, -8],
-          }}
-          transition={{
-            duration: 9,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-[#ff5a52]"
-        />
-
-        {/* Dot patterns */}
-        <div className="absolute right-10 top-20 h-40 w-40 opacity-30 [background-image:radial-gradient(#111_1px,transparent_1px)] [background-size:10px_10px]" />
-
-        <div className="absolute bottom-20 left-10 h-32 w-32 opacity-20 [background-image:radial-gradient(#111_1px,transparent_1px)] [background-size:8px_8px]" />
-
-      </div>
+    <main className="relative min-h-screen overflow-hidden bg-[#171717] text-white">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-30"
+        style={{
+          backgroundImage: "radial-gradient(#555 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }}
+      />
+      <div className="pointer-events-none absolute -right-24 top-24 h-72 w-72 rounded-full bg-[#e49385]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 -left-24 h-80 w-80 rounded-full bg-[#a2d7cb]/10 blur-3xl" />
 
       <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-6 md:px-10 lg:px-14">
-
-        {/* =====================================================
-            NAVBAR
-        ===================================================== */}
-
         <motion.nav
-          initial={{ y: -30, opacity: 0 }}
+          initial={{ y: -18, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="flex items-center justify-between border-b-2 border-black pb-5"
+          className="flex items-center justify-between rounded-2xl border border-white/5 bg-[#292929] px-5 py-4 shadow-lg sm:px-7"
         >
-
           <div className="flex items-center gap-3">
-
-            <div className="flex h-10 w-10 items-center justify-center border-2 border-black bg-[#c8ff00] shadow-[4px_4px_0_#111]">
-              <Sparkles
-                size={21}
-                strokeWidth={3}
-              />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e49385] text-[#171717]">
+              <Sparkles size={21} strokeWidth={2.5} />
             </div>
-
-            <span className="font-black tracking-[-0.05em]">
-              TODO.STUDIO
+            <span className="font-bold tracking-tight">
+              TODO<span className="text-[#e49385]">.</span>STUDIO
             </span>
-
           </div>
-
-          <div className="hidden gap-8 text-xs font-black uppercase tracking-widest md:flex">
-            <span>WORK</span>
-            <span>ABOUT</span>
-            <span>FOCUS</span>
+          <div className="hidden items-center gap-2 text-xs font-medium text-white/50 sm:flex">
+            <span className="h-2 w-2 rounded-full bg-[#a2d7cb]" />
+            ACCOUNT RECOVERY
           </div>
-
-          <div className="border-2 border-black bg-black px-4 py-2 text-xs font-black text-white shadow-[4px_4px_0_#c8ff00]">
+          <span className="rounded-full border border-white/10 bg-[#202020] px-4 py-2 text-xs font-semibold text-white/70">
             ACCOUNT
-          </div>
-
+          </span>
         </motion.nav>
 
-        {/* =====================================================
-            MAIN
-        ===================================================== */}
-
-        <div className="flex flex-1 items-center justify-center py-14">
-
-          <div className="grid w-full max-w-6xl items-center gap-16 lg:grid-cols-2">
-
-            {/* =================================================
-                LEFT SIDE
-            ================================================= */}
-
+        <div className="flex flex-1 items-center justify-center py-12 md:py-16">
+          <div className="grid w-full max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <motion.section
-              initial={{
-                opacity: 0,
-                x: -60,
-              }}
-              animate={{
-                opacity: 1,
-                x: 0,
-              }}
-              transition={{
-                duration: 0.5,
-              }}
+              initial={{ opacity: 0, x: -25 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4 }}
             >
-
-              <div className="mb-6 inline-block rotate-[-2deg] border-2 border-black bg-[#c8ff00] px-4 py-2 text-xs font-black uppercase shadow-[4px_4px_0_#111]">
-                Account recovery →
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#e49385]/25 bg-[#e49385]/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#e49385]">
+                <ShieldCheck size={15} />
+                Account recovery
               </div>
-
-              <p className="mb-5 text-xs font-black uppercase tracking-[0.3em]">
+              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-white/40">
                 Personal productivity / 2026
               </p>
-
-              <h1 className="font-black uppercase leading-[0.78] tracking-[-0.07em]">
-
-                <span className="block text-[17vw] sm:text-[110px] lg:text-[125px]">
+              <h1 className="font-semibold leading-[0.88] tracking-[-0.07em]">
+                <span className="block text-[17vw] sm:text-[100px] lg:text-[118px]">
                   FORGOT
                 </span>
-
-                <span className="block text-[17vw] sm:text-[110px] lg:text-[125px]">
+                <span className="block text-[17vw] sm:text-[100px] lg:text-[118px]">
                   YOUR
                 </span>
-
-                <span className="inline-block bg-[#ff5a52] px-3 text-[17vw] sm:text-[110px] lg:text-[125px]">
+                <span className="mt-2 inline-block rounded-xl bg-[#e49385] px-3 py-1 text-[17vw] text-[#171717] sm:text-[100px] lg:text-[118px]">
                   KEY?
                 </span>
-
               </h1>
-
-              <div className="mt-10 flex max-w-md items-start gap-4">
-
-                <div className="h-14 w-2 bg-black" />
-
-                <p className="font-bold leading-6">
-                  No worries. We'll send you a code,
-                  verify your identity, and get you
-                  back to your tasks.
+              <div className="mt-8 flex max-w-md items-start gap-4">
+                <div className="h-14 w-1.5 shrink-0 rounded-full bg-[#a2d7cb]" />
+                <p className="leading-7 text-white/60">
+                  No worries. We’ll send you a code, verify your identity, and
+                  help you get back to your tasks.
                 </p>
-
               </div>
-
-              <div className="mt-8 hidden items-center gap-3 text-xs font-black uppercase md:flex">
-                <ArrowUpRight
-                  size={20}
-                  strokeWidth={3}
-                />
-
+              <div className="mt-8 hidden items-center gap-3 text-xs font-semibold uppercase tracking-wider text-white/45 md:flex">
+                <ArrowUpRight size={18} />
                 Recover. Reset. Return.
               </div>
-
             </motion.section>
 
-            {/* =================================================
-                RIGHT SIDE
-            ================================================= */}
-
             <motion.section
-              initial={{
-                opacity: 0,
-                y: 40,
-                rotate: 2,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                rotate: 0,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 220,
-                damping: 18,
-                delay: 0.15,
-              }}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.1 }}
               className="relative"
             >
-
-              {/* Tape */}
-
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: -20,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                transition={{
-                  delay: 0.5,
-                }}
-                className="absolute left-1/2 top-[-18px] z-20 h-10 w-32 -translate-x-1/2 rotate-[-3deg] border border-black/20 bg-[#d9d3b8]/90"
-              />
-
-              <div className="border-2 border-black bg-white p-6 shadow-[10px_10px_0_#111] md:p-10">
-
-                {/* =================================================
-                    HEADER
-                ================================================= */}
-
+              <div className="rounded-[28px] border border-white/[0.07] bg-[#222222] p-6 shadow-2xl shadow-black/30 sm:p-9">
                 <div className="mb-8 flex items-center justify-between">
-
-                  <div className="flex h-14 w-14 items-center justify-center border-2 border-black bg-[#f1eee5] shadow-[4px_4px_0_#111]">
-
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e49385] text-[#171717]">
                     {!codesent ? (
-                      <Mail
-                        size={27}
-                        strokeWidth={3}
-                      />
-                    ) : signIn.status ===
-                      "needs_new_password" ? (
-                      <KeyRound
-                        size={27}
-                        strokeWidth={3}
-                      />
+                      <Mail size={26} />
+                    ) : signIn.status === "needs_new_password" ? (
+                      <KeyRound size={26} />
                     ) : (
-                      <ShieldCheck
-                        size={27}
-                        strokeWidth={3}
-                      />
+                      <ShieldCheck size={26} />
                     )}
-
                   </div>
-
-                  <span className="text-6xl font-black leading-none opacity-10">
+                  <span className="text-5xl font-semibold text-white/[0.08]">
                     {!codesent
                       ? "01"
-                      : signIn.status ===
-                        "needs_new_password"
-                      ? "03"
-                      : "02"}
+                      : signIn.status === "needs_new_password"
+                        ? "03"
+                        : "02"}
                   </span>
-
                 </div>
 
-                {/* =================================================
-                    STEP 1 — EMAIL
-                ================================================= */}
-
                 <AnimatePresence mode="wait">
-
                   {!codesent && (
                     <motion.div
                       key="email"
-                      initial={{
-                        opacity: 0,
-                        x: 30,
-                      }}
-                      animate={{
-                        opacity: 1,
-                        x: 0,
-                      }}
-                      exit={{
-                        opacity: 0,
-                        x: -30,
-                      }}
+                      initial={{ opacity: 0, x: 16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -16 }}
                     >
-
-                      <p className="mb-2 text-xs font-black uppercase tracking-[0.3em]">
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#e49385]">
                         Step 01 / Identify
                       </p>
-
-                      <h2 className="text-5xl font-black uppercase leading-[0.85] tracking-[-0.05em]">
-                        RESET
-                        <span className="block text-[#ff5a52]">
-                          ACCESS.
-                        </span>
+                      <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                        RESET <span className="text-[#e49385]">ACCESS.</span>
                       </h2>
-
-                      <div className="my-7 h-1 w-20 bg-black" />
-
-                      <p className="mb-8 font-bold leading-6">
-                        Enter your account email and
-                        we'll send you a password reset
-                        code.
+                      <p className="mb-7 mt-4 text-sm leading-6 text-white/55">
+                        Enter your account email and we’ll send you a password
+                        reset code.
                       </p>
-
-                      <form
-                        action={sendResetCode}
-                        className="space-y-5"
-                      >
-
+                      <form action={sendResetCode} className="space-y-5">
                         <div>
-
-                          <label
-                            htmlFor="email"
-                            className="mb-2 block text-xs font-black uppercase tracking-widest"
-                          >
+                          <label htmlFor="email" className={labelClass}>
                             Email address
                           </label>
-
                           <div className="relative">
-
-                            <Mail
-                              size={20}
-                              strokeWidth={3}
-                              className="absolute left-4 top-1/2 -translate-y-1/2"
-                            />
-
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={19} />
                             <Input
                               id="email"
                               type="email"
                               value={emailAddress}
                               name="email"
                               required
-                              onChange={(e) =>
-                                setEmailAddress(
-                                  e.target.value
-                                )
-                              }
-                              placeholder="YOU@EXAMPLE.COM"
-                              className="h-16 rounded-none border-2 border-black bg-[#f1eee5] pl-12 font-black placeholder:text-black/25 focus-visible:ring-0 focus-visible:ring-offset-0"
+                              onChange={(e) => setEmailAddress(e.target.value)}
+                              placeholder="you@example.com"
+                              className={inputClass}
                             />
-
                           </div>
-
                         </div>
-
-                        {/* Error */}
-
                         {errors?.global?.[0]?.message && (
-                          <div className="border-2 border-black bg-[#ff5a52] p-4 text-sm font-black">
-                            {errors?.global?.[0]?.message}
+                          <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-300">
+                            {errors.global[0].message}
                           </div>
                         )}
-
                         <Button
                           type="submit"
-                          disabled={
-                            fetchStatus === "fetching"
-                          }
-                          className="h-16 w-full rounded-none border-2 border-black bg-black text-lg font-black text-white shadow-[5px_5px_0_#c8ff00] hover:bg-[#c8ff00] hover:text-black"
+                          disabled={fetchStatus === "fetching"}
+                          className="h-14 w-full rounded-xl bg-[#e49385] text-base font-semibold text-[#171717] transition hover:bg-[#f0a497]"
                         >
-                          {fetchStatus === "fetching"
-                            ? "SENDING..."
-                            : "SEND RESET CODE"}
-
-                          <ArrowRight
-                            size={23}
-                            strokeWidth={3}
-                          />
+                          {fetchStatus === "fetching" ? "SENDING..." : "SEND RESET CODE"}
+                          <ArrowRight size={20} className="ml-2" />
                         </Button>
-
                       </form>
-
                     </motion.div>
                   )}
 
-                  {/* =================================================
-                      STEP 2 — VERIFY CODE
-                  ================================================= */}
-
-                  {codesent &&
-                    signIn.status !==
-                      "needs_new_password" && (
-
-                      <motion.div
-                        key="verify"
-                        initial={{
-                          opacity: 0,
-                          x: 30,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          x: 0,
-                        }}
-                        exit={{
-                          opacity: 0,
-                          x: -30,
-                        }}
-                      >
-
-                        <p className="mb-2 text-xs font-black uppercase tracking-[0.3em]">
-                          Step 02 / Verify
-                        </p>
-
-                        <h2 className="text-5xl font-black uppercase leading-[0.85] tracking-[-0.05em]">
-                          CHECK
-                          <span className="block text-[#ff5a52]">
-                            CODE.
-                          </span>
-                        </h2>
-
-                        <div className="my-7 h-1 w-20 bg-black" />
-
-                        <p className="mb-8 font-bold leading-6">
-                          Check your inbox. Enter the
-                          verification code we sent you.
-                        </p>
-
-                        <form
-                          action={verifyCode}
-                          className="space-y-5"
-                        >
-
-                          <div>
-
-                            <label
-                              htmlFor="code"
-                              className="mb-2 block text-xs font-black uppercase tracking-widest"
-                            >
-                              Verification code
-                            </label>
-
-                            <div className="relative">
-
-                              <ShieldCheck
-                                size={20}
-                                strokeWidth={3}
-                                className="absolute left-4 top-1/2 -translate-y-1/2"
-                              />
-
-                              <Input
-                                id="code"
-                                type="text"
-                                value={code}
-                                name="code"
-                                required
-                                onChange={(e) =>
-                                  setCode(
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="ENTER CODE"
-                                autoComplete="one-time-code"
-                                className="h-16 rounded-none border-2 border-black bg-[#f1eee5] pl-12 font-black tracking-[0.25em] placeholder:text-black/25 focus-visible:ring-0 focus-visible:ring-offset-0"
-                              />
-
-                            </div>
-
-                          </div>
-
-                          {errors?.global?.[0]?.message && (
-                            <div className="border-2 border-black bg-[#ff5a52] p-4 text-sm font-black">
-                              {errors?.global?.[0]?.message}
-                            </div>
-                          )}
-
-                          <Button
-                            type="submit"
-                            disabled={
-                              fetchStatus === "fetching"
-                            }
-                            className="h-16 w-full rounded-none border-2 border-black bg-black text-lg font-black text-white shadow-[5px_5px_0_#c8ff00] hover:bg-[#c8ff00] hover:text-black"
-                          >
-                            {fetchStatus === "fetching"
-                              ? "VERIFYING..."
-                              : "VERIFY CODE"}
-
-                            <ArrowRight
-                              size={23}
-                              strokeWidth={3}
+                  {codesent && signIn.status !== "needs_new_password" && (
+                    <motion.div
+                      key="verify"
+                      initial={{ opacity: 0, x: 16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -16 }}
+                    >
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#e49385]">
+                        Step 02 / Verify
+                      </p>
+                      <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                        CHECK <span className="text-[#e49385]">CODE.</span>
+                      </h2>
+                      <p className="mb-7 mt-4 text-sm leading-6 text-white/55">
+                        Check your inbox and enter the verification code we sent.
+                      </p>
+                      <form action={verifyCode} className="space-y-5">
+                        <div>
+                          <label htmlFor="code" className={labelClass}>
+                            Verification code
+                          </label>
+                          <div className="relative">
+                            <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={19} />
+                            <Input
+                              id="code"
+                              type="text"
+                              value={code}
+                              name="code"
+                              required
+                              onChange={(e) => setCode(e.target.value)}
+                              placeholder="Enter code"
+                              autoComplete="one-time-code"
+                              className={`${inputClass} tracking-[0.2em]`}
                             />
-                          </Button>
-
-                        </form>
-
-                      </motion.div>
-                    )}
-
-                  {/* =================================================
-                      STEP 3 — NEW PASSWORD
-                  ================================================= */}
-
-                  {codesent &&
-                    signIn.status ===
-                      "needs_new_password" && (
-
-                      <motion.div
-                        key="password"
-                        initial={{
-                          opacity: 0,
-                          x: 30,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          x: 0,
-                        }}
-                      >
-
-                        <p className="mb-2 text-xs font-black uppercase tracking-[0.3em]">
-                          Step 03 / Finish
-                        </p>
-
-                        <h2 className="text-5xl font-black uppercase leading-[0.85] tracking-[-0.05em]">
-                          NEW
-                          <span className="block text-[#ff5a52]">
-                            PASSWORD.
-                          </span>
-                        </h2>
-
-                        <div className="my-7 h-1 w-20 bg-black" />
-
-                        <p className="mb-8 font-bold leading-6">
-                          Almost there. Create a new
-                          password and get back to work.
-                        </p>
-
-                        <form
-                          action={submitNewPassword}
-                          className="space-y-5"
-                        >
-
-                          <div>
-
-                            <label
-                              htmlFor="newPassword"
-                              className="mb-2 block text-xs font-black uppercase tracking-widest"
-                            >
-                              New password
-                            </label>
-
-                            <div className="relative">
-
-                              <LockKeyhole
-                                size={20}
-                                strokeWidth={3}
-                                className="absolute left-4 top-1/2 -translate-y-1/2"
-                              />
-
-                              <Input
-                                id="newPassword"
-                                value={password}
-                                type="password"
-                                name="newPassword"
-                                required
-                                onChange={(e) =>
-                                  setPassword(
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="NEW PASSWORD"
-                                className="h-16 rounded-none border-2 border-black bg-[#f1eee5] pl-12 font-black placeholder:text-black/25 focus-visible:ring-0 focus-visible:ring-offset-0"
-                              />
-
-                            </div>
-
                           </div>
+                        </div>
+                        {errors?.global?.[0]?.message && (
+                          <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-300">
+                            {errors.global[0].message}
+                          </div>
+                        )}
+                        <Button
+                          type="submit"
+                          disabled={fetchStatus === "fetching"}
+                          className="h-14 w-full rounded-xl bg-[#e49385] text-base font-semibold text-[#171717] transition hover:bg-[#f0a497]"
+                        >
+                          {fetchStatus === "fetching" ? "VERIFYING..." : "VERIFY CODE"}
+                          <ArrowRight size={20} className="ml-2" />
+                        </Button>
+                      </form>
+                    </motion.div>
+                  )}
 
-                          {errors?.global?.[0]?.message && (
-                            <div className="border-2 border-black bg-[#ff5a52] p-4 text-sm font-black">
-                              {errors?.global?.[0]?.message}
-                            </div>
-                          )}
-
-                          <Button
-                            type="submit"
-                            disabled={
-                              fetchStatus === "fetching"
-                            }
-                            className="h-16 w-full rounded-none border-2 border-black bg-black text-lg font-black text-white shadow-[5px_5px_0_#c8ff00] hover:bg-[#c8ff00] hover:text-black"
-                          >
-                            {fetchStatus === "fetching"
-                              ? "UPDATING..."
-                              : "SET NEW PASSWORD"}
-
-                            <Check
-                              size={23}
-                              strokeWidth={4}
+                  {codesent && signIn.status === "needs_new_password" && (
+                    <motion.div
+                      key="password"
+                      initial={{ opacity: 0, x: 16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                    >
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#e49385]">
+                        Step 03 / Finish
+                      </p>
+                      <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                        NEW <span className="text-[#e49385]">PASSWORD.</span>
+                      </h2>
+                      <p className="mb-7 mt-4 text-sm leading-6 text-white/55">
+                        Almost there. Create a new password and get back to work.
+                      </p>
+                      <form action={submitNewPassword} className="space-y-5">
+                        <div>
+                          <label htmlFor="newPassword" className={labelClass}>
+                            New password
+                          </label>
+                          <div className="relative">
+                            <LockKeyhole className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={19} />
+                            <Input
+                              id="newPassword"
+                              value={password}
+                              type="password"
+                              name="newPassword"
+                              required
+                              onChange={(e) => setPassword(e.target.value)}
+                              placeholder="New password"
+                              className={inputClass}
                             />
-                          </Button>
-
-                        </form>
-
-                      </motion.div>
-                    )}
-
+                          </div>
+                        </div>
+                        {errors?.global?.[0]?.message && (
+                          <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-sm text-red-300">
+                            {errors.global[0].message}
+                          </div>
+                        )}
+                        <Button
+                          type="submit"
+                          disabled={fetchStatus === "fetching"}
+                          className="h-14 w-full rounded-xl bg-[#e49385] text-base font-semibold text-[#171717] transition hover:bg-[#f0a497]"
+                        >
+                          {fetchStatus === "fetching" ? "UPDATING..." : "SET NEW PASSWORD"}
+                          <Check size={20} className="ml-2" />
+                        </Button>
+                      </form>
+                    </motion.div>
+                  )}
                 </AnimatePresence>
 
-                {/* =================================================
-                    CARD FOOTER
-                ================================================= */}
-
-                <div className="mt-7 flex items-center justify-between border-t-2 border-black pt-5 text-[10px] font-black uppercase tracking-widest">
-
+                <div className="mt-7 flex items-center justify-between border-t border-white/10 pt-5 text-[10px] font-semibold uppercase tracking-widest text-white/40">
                   <span className="flex items-center gap-2">
-                    <Check
-                      size={14}
-                      strokeWidth={4}
-                    />
+                    <Check size={14} className="text-[#a2d7cb]" />
                     Secure recovery
                   </span>
-
                   <span>
                     {codesent
-                      ? signIn.status ===
-                        "needs_new_password"
+                      ? signIn.status === "needs_new_password"
                         ? "AUTH / 03"
                         : "AUTH / 02"
                       : "AUTH / 01"}
                   </span>
-
                 </div>
-
               </div>
-
-              {/* Bottom label */}
-
-              <div className="mt-6 flex justify-between text-xs font-black uppercase">
-
+              <div className="mt-5 flex justify-between px-1 text-[10px] font-semibold uppercase tracking-wider text-white/35">
                 <span>TODO.STUDIO</span>
-
                 <span className="flex items-center gap-1">
-                  PASSWORD RECOVERY
-                  <ArrowUpRight size={14} />
+                  PASSWORD RECOVERY <ArrowUpRight size={13} />
                 </span>
-
               </div>
-
             </motion.section>
-
           </div>
-
         </div>
 
-        {/* =====================================================
-            FOOTER
-        ===================================================== */}
-
-        <footer className="flex flex-col justify-between gap-4 border-t-2 border-black py-6 text-xs font-black uppercase md:flex-row">
-
+        <footer className="flex flex-col justify-between gap-3 border-t border-white/10 py-6 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35 sm:flex-row">
           <span>© TODO.STUDIO 2026</span>
-
-          <span>
-            RECOVER / RESET / RETURN
-          </span>
-
-          <span>BUILT FOR DOERS.</span>
-
+          <span>Recover / Reset / Return</span>
+          <span>Built for doers.</span>
         </footer>
-
       </div>
     </main>
   );
