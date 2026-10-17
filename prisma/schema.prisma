@@ -37,6 +37,7 @@ model Todo{
   completed Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  completedAt DateTime?
   
       //this line establish the relationship between user and todo
 

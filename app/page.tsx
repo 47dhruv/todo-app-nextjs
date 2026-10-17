@@ -19,6 +19,10 @@ import {
   Plus,
   Trash2,
   Clock3,
+  CalendarDays,
+  CalendarRange,
+  Calendar,
+  TrendingUp,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -33,6 +37,18 @@ interface Todo {
 
 type FilterType = "all" | "pending" | "completed";
 
+
+const buildTrackerQuery = () => {
+  const d = new Date()
+  const start = {
+    today: new Date(d.getFullYear(), d.getMonth(), d.getDate()),
+    week: new Date(d.getFullYear(), d.getMonth(), d.getDate() - ((d.getDay() + 6) % 7)),
+    month: new Date(d.getFullYear(), d.getMonth(), 1),
+    year: new Date(d.getFullYear(), 0, 1),
+  }
+  return Object.entries(start).map(([k, v]) => `${k}=${v.toISOString()}`).join("&")
+}
+
 const Homepage = () => {
   const { isLoaded, isSignedIn, user } = useUser();
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -41,6 +57,12 @@ const Homepage = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [tracker, setTracker] = useState<{
+    day: number;
+    week: number;
+    month: number;
+    year: number;
+  } | null>(null);
 
   /* ================= FETCH ================= */
   const todolist = async () => {
@@ -48,11 +70,30 @@ const Homepage = () => {
       const response = await axios.get("http://localhost:3000/api/todos");
       setTodos(response.data.todo || []);
       setHiddenCount(response.data.hiddenCount || 0);
-    } catch (error: any) {
+    } catch (error: any) {       
       console.error(error?.response || error);
       toast.error("Something went wrong");
     }
   };
+
+  const loadTracker = async () => {
+    try {
+      const response = await axios.get(`/api/tracker?${buildTrackerQuery()}`);
+      // Supports APIs that return the tracker directly or inside { tracker: ... }.
+      const data = response.data?.tracker ?? response.data;
+      setTracker({
+        day: Number(data.day ?? data.today ?? 0),
+        week: Number(data.week ?? 0),
+        month: Number(data.month ?? 0),
+        year: Number(data.year ?? 0),
+      });
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data?.message ?? "Tracker could not be loaded");
+      }
+    }
+  }
+
 
   /* ================= DELETE ================= */
   const deleteHandler = async (id: number) => {
@@ -60,6 +101,7 @@ const Homepage = () => {
       await axios.delete(`http://localhost:3000/api/todos/${id}`);
       toast.success("Task deleted");
       await todolist()
+      await loadTracker()
     } catch (error: any) {
       console.error(error?.response?.data?.message);
       toast.error(error?.response?.data?.message ?? "Task could not be deleted");
@@ -78,6 +120,7 @@ const Homepage = () => {
           todo.id === id ? { ...todo, completed: !completed } : todo
         )
       );
+      await loadTracker()
     } catch (error: any) {
       console.error(error?.response?.data?.message);
       toast.error(error?.response?.data?.message ?? "Something went wrong");
@@ -112,6 +155,7 @@ const Homepage = () => {
 
   useEffect(() => {
     todolist();
+    loadTracker();
   }, []);
 
   const completed = useMemo(
@@ -536,6 +580,95 @@ const Homepage = () => {
                   <span className="text-lg font-bold text-[#A2D7CB]">{completed}</span>
                 </div>
               </div>
+            </section>
+
+            {/* Activity Tracker */}
+            <section className="overflow-hidden rounded-2xl border border-[#333333] bg-[#222222] p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#A3A3A3]">
+                    Activity tracker
+                  </p>
+                  <h2 className="mt-1 text-lg font-bold text-[#F5F5F5]">
+                    Your consistency
+                  </h2>
+                  <p className="mt-1 text-xs leading-relaxed text-[#A3A3A3]">
+                    Tasks completed across different time periods.
+                  </p>
+                </div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#A2D7CB]/20 bg-[#A2D7CB]/10 text-[#A2D7CB]">
+                  <TrendingUp size={19} />
+                </div>
+              </div>
+
+              {tracker ? (
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  {[
+                    {
+                      label: "Today",
+                      value: tracker.day,
+                      icon: Clock3,
+                      accent: "coral",
+                    },
+                    {
+                      label: "This week",
+                      value: tracker.week,
+                      icon: CalendarRange,
+                      accent: "mint",
+                    },
+                    {
+                      label: "This month",
+                      value: tracker.month,
+                      icon: CalendarDays,
+                      accent: "mint",
+                    },
+                    {
+                      label: "This year",
+                      value: tracker.year,
+                      icon: Calendar,
+                      accent: "coral",
+                    },
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    const coral = item.accent === "coral";
+
+                    return (
+                      <motion.div
+                        key={item.label}
+                        whileHover={{ y: -2 }}
+                        className="rounded-xl border border-[#383838] bg-[#292929] p-3.5"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-medium text-[#A3A3A3]">
+                            {item.label}
+                          </span>
+                          <Icon
+                            size={15}
+                            className={coral ? "text-[#E49385]" : "text-[#A2D7CB]"}
+                          />
+                        </div>
+                        <p
+                          className={`mt-3 text-2xl font-bold tabular-nums ${
+                            coral ? "text-[#E49385]" : "text-[#A2D7CB]"
+                          }`}
+                        >
+                          {item.value}
+                        </p>
+                        <p className="mt-1 text-[10px] text-[#858585]">
+                          {item.value === 1 ? "task completed" : "tasks completed"}
+                        </p>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mt-5 flex items-center gap-3 rounded-xl border border-[#383838] bg-[#292929] px-4 py-5">
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-[#A2D7CB]" />
+                  <p className="text-xs text-[#A3A3A3]">
+                    Loading your activity...
+                  </p>
+                </div>
+              )}
             </section>
 
             {/* Productive Habit Card */}
