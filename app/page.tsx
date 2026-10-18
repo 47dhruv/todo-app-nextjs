@@ -1,5 +1,5 @@
 "use client";
-
+import Script from "next/script"
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -70,7 +70,7 @@ const Homepage = () => {
       const response = await axios.get("http://localhost:3000/api/todos");
       setTodos(response.data.todo || []);
       setHiddenCount(response.data.hiddenCount || 0);
-    } catch (error: any) {       
+    } catch (error: any) {
       console.error(error?.response || error);
       toast.error("Something went wrong");
     }
@@ -91,6 +91,44 @@ const Homepage = () => {
       if (axios.isAxiosError(error)) {
         console.error(error.response?.data?.message ?? "Tracker could not be loaded");
       }
+    }
+  }
+
+
+  const subscribeHandler = async () => {
+    try {
+      const { data } = await axios.post("/api/payment/order")
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: data.currency,
+        name: "TaskFlow",
+        description: "One year subscription",
+        order_id: data.orderId,
+        handler: async (response: any) => {
+          try {
+            await axios.post("/api/payment/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            })
+            toast.success("Subscription active")
+            await loadTracker()
+            await todolist()
+          } catch (error: any) {
+            toast.error(error?.response?.data?.message ?? "Could not verify payment")
+          }
+        },
+        modal: {
+          ondismiss: () => toast("Please subscribe to continue"),
+        },
+      }
+
+      const rzp = new (window as any).Razorpay(options)
+      rzp.open()
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message ?? "Could not start payment")
     }
   }
 
@@ -181,8 +219,10 @@ const Homepage = () => {
 
   /* ================= UI ================= */
   return (
+
     <main className="relative min-h-screen overflow-x-hidden bg-[#171717] text-[#F5F5F5] selection:bg-[#E49385] selection:text-[#171717]">
       {/* Subtle dotted canvas background */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.14]"
         style={{
@@ -245,7 +285,7 @@ const Homepage = () => {
                 </span>
                 <UserButton
                   appearance={{
-                    theme:dark,
+                    theme: dark,
                     elements: {
                       avatarBox: "!h-8 !w-8 rounded-lg",
                       userButtonAvatarBox: "!h-8 !w-8",
@@ -535,6 +575,9 @@ const Homepage = () => {
                   {hiddenCount} more {hiddenCount === 1 ? "task is" : "tasks are"} hidden.
                 </span>{" "}
                 Subscribe or upgrade to view your full history.
+                <button type="button" onClick={subscribeHandler}>
+                  Subscribe for ₹100 a year
+                </button>
               </motion.div>
             )}
           </section>
@@ -648,9 +691,8 @@ const Homepage = () => {
                           />
                         </div>
                         <p
-                          className={`mt-3 text-2xl font-bold tabular-nums ${
-                            coral ? "text-[#E49385]" : "text-[#A2D7CB]"
-                          }`}
+                          className={`mt-3 text-2xl font-bold tabular-nums ${coral ? "text-[#E49385]" : "text-[#A2D7CB]"
+                            }`}
                         >
                           {item.value}
                         </p>
