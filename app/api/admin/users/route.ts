@@ -1,6 +1,7 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { hasActiveSubscription } from "@/lib/subscription";
 
 
 export async function GET() {
@@ -35,7 +36,7 @@ export async function GET() {
         const dbUsers = await prisma.user.findMany({
             select: {
                 id: true,
-                isSubscribed: true,
+                subscribedUntil:true,
                 role: true,
                 _count: {
                     select: {
@@ -50,13 +51,13 @@ export async function GET() {
             userId: dbUsers.map((u) => u.id),
             limit: dbUsers.length,
         })
-        const users = dbUsers.map((u) => {
+         const users = dbUsers.map((u) => {
   const match = clerkUsers.find((c) => c.id === u.id)
-  return { ...u,
-    firstname:match?.firstName??null ,
-    lastname:match?.lastName?? null,
-    username:match?.username ?? null ,
-    email: match?.primaryEmailAddress?.emailAddress ?? null}
+  return {
+    ...u,
+    email: match?.primaryEmailAddress?.emailAddress ?? null,
+    isSubscribed: hasActiveSubscription(u),
+  }
 })
 
         return NextResponse.json({

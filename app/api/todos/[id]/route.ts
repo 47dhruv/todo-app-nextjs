@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+
 // algorithm for update todo
 // 1 check user is authenticate or not
 // 2  take id param and stote in raw id
@@ -44,6 +45,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
                 )
         }
         const rawid = (await params).id
+
         const id = Number(rawid)
         if (!Number.isInteger(id) || id <= 0) {
             return NextResponse.json({ message: "invalid id" }, { status: 400 })
