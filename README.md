@@ -39,7 +39,7 @@ Next.js (App Router), React, TypeScript, Tailwind CSS, Prisma, PostgreSQL (Neon)
    - `NEXT_PUBLIC_RAZORPAY_KEY_ID`
    - `RAZORPAY_KEY_SECRET`
 3. Run `npx prisma migrate dev` to create the tables, then `npx prisma generate` to build the client.
-4. Run `npm run dev` and open `http://localhost:3000`.
+4. Run `npm run dev` and open `https://todo-app-nextjs-kappa-lac.vercel.app/`.
 5. To try the admin page, set your user's `role` to `ADMIN` in the database, for example with `npx prisma studio`.
 6. Use Razorpay **Test Mode** keys. Razorpay's docs list test cards and test UPI addresses for successful and failed payments.
 

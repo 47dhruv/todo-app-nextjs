@@ -67,7 +67,7 @@ const Homepage = () => {
   /* ================= FETCH ================= */
   const todolist = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/todos");
+      const response = await axios.get("https://todo-app-nextjs-kappa-lac.vercel.app//api/todos");
       setTodos(response.data.todo || []);
       setHiddenCount(response.data.hiddenCount || 0);
     } catch (error: any) {
@@ -136,7 +136,7 @@ const Homepage = () => {
   /* ================= DELETE ================= */
   const deleteHandler = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:3000/api/todos/${id}`);
+      await axios.delete(`https://todo-app-nextjs-kappa-lac.vercel.app//api/todos/${id}`);
       toast.success("Task deleted");
       await todolist()
       await loadTracker()
@@ -149,7 +149,7 @@ const Homepage = () => {
   /* ================= TOGGLE ================= */
   const toggle = async (id: number, completed: boolean) => {
     try {
-      await axios.patch(`http://localhost:3000/api/todos/${id}`, {
+      await axios.patch(`https://todo-app-nextjs-kappa-lac.vercel.app//api/todos/${id}`, {
         completed: !completed,
       });
 
@@ -176,7 +176,7 @@ const Homepage = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:3000/api/todos", {
+      const response = await axios.post("https://todo-app-nextjs-kappa-lac.vercel.app//api/todos", {
         title: title.trim(),
       });
 
